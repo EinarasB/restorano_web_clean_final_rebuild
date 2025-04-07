@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from app.models import SessionLocal, User
+from fastapi.responses import RedirectResponse
 from starlette.status import HTTP_302_FOUND
+from app.models import SessionLocal, User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")

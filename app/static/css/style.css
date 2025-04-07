@@ -79,3 +79,35 @@ button {
     button:hover {
         background-color: #1e40af;
     }
+.form-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 12px;
+    width: 360px;
+    margin: auto;
+    margin-top: 10vh;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    text-align: center;
+}
+
+input, button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+button {
+    background-color: #2563eb;
+    color: white;
+    font-weight: bold;
+    border: none;
+    transition: 0.3s;
+}
+
+    button:hover {
+        background-color: #1e40af;
+    }

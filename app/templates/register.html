@@ -5,12 +5,13 @@
     <title>Registracija</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
     <div class="form-container">
         <h2>Registracija</h2>
         <form action="/register" method="post">
             <input type="text" name="username" placeholder="Vartotojo vardas" required>
-            <input type="email" name="email" placeholder="El. paštas" required>
+            <input type="email" name="email" placeholder="El. paštas" required> <!-- TRŪKO ŠITO -->
             <input type="password" name="password" placeholder="Slaptažodis" required>
             <button type="submit">Registruotis</button>
         </form>
