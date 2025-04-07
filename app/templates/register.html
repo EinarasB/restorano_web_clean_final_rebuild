@@ -1,21 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registracija</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="form-container">
         <h2>Registracija</h2>
-        <form method="post" action="/register">
+        <form action="/register" method="post">
             <input type="text" name="username" placeholder="Vartotojo vardas" required>
+            <input type="email" name="email" placeholder="El. paštas" required>
             <input type="password" name="password" placeholder="Slaptažodis" required>
             <button type="submit">Registruotis</button>
         </form>
-        <p>Jau turite paskyrą? <a href="/login">Prisijunkite</a></p>
     </div>
 </body>
 </html>

@@ -1,12 +1,11 @@
-﻿import os
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 from app.routes import router as register_router
 from app.models import Base, engine
-from fastapi.requests import Request
-from fastapi.templating import Jinja2Templates
 import uvicorn
+import os
 
 Base.metadata.create_all(bind=engine)
 
@@ -30,8 +29,5 @@ def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 if __name__ == "__main__":
-    import uvicorn
-    import os
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("run:app", host="0.0.0.0", port=port)
-

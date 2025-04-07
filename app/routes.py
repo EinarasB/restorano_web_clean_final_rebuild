@@ -1,8 +1,8 @@
-
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.models import SessionLocal, User
+from starlette.status import HTTP_302_FOUND
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -12,10 +12,10 @@ def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 @router.post("/register")
-def register_user(request: Request, username: str = Form(...), password: str = Form(...)):
+def register_user(request: Request, username: str = Form(...), email: str = Form(...), password: str = Form(...)):
     db = SessionLocal()
-    user = User(username=username, password=password)
+    user = User(username=username, email=email, password=password)
     db.add(user)
     db.commit()
-    db.refresh(user)
-    return RedirectResponse(url="/login", status_code=303)
+    db.close()
+    return RedirectResponse("/", status_code=HTTP_302_FOUND)
