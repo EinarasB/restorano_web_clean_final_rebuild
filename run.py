@@ -7,6 +7,8 @@ from app.models import Base, engine
 import uvicorn
 import os
 
+app.include_router(register_router)
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

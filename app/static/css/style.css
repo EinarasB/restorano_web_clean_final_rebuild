@@ -9,6 +9,19 @@ body {
     height: 100vh;
 }
 
+
+.form-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 12px;
+    width: 350px;
+    margin: auto;
+    margin-top: 10vh;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+
 .container {
     background-color: rgba(255, 255, 255, 0.95);
     padding: 40px;
