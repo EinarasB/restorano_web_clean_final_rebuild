@@ -11,7 +11,7 @@
         {% if error %}
         <p style="color: red;">{{ error }}</p>
         {% endif %}
-        <form action="/admin" method="post">
+        <form method="post" action="/admin">
             <input type="text" name="username" placeholder="Vartotojo vardas" required>
             <input type="password" name="password" placeholder="Slaptažodis" required>
             <button type="submit">Prisijungti</button>
