@@ -124,3 +124,11 @@ button {
     button:hover {
         background-color: #1e40af;
     }
+
+.admin-btn {
+    background-color: #16a34a;
+}
+
+    .admin-btn:hover {
+        background-color: #15803d;
+    }

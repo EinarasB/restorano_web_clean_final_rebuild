@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin panelė</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Vartotojų sąrašas</h2>
+        <table border="1" style="width:100%; margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vartotojo vardas</th>
+                    <th>El. paštas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

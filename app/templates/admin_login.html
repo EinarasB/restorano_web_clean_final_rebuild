@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin prisijungimas</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Admin prisijungimas</h2>
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <form action="/admin" method="post">
+            <input type="text" name="username" placeholder="Vartotojo vardas" required>
+            <input type="password" name="password" placeholder="Slaptažodis" required>
+            <button type="submit">Prisijungti</button>
+        </form>
+    </div>
+</body>
+</html>
