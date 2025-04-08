@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 # Naudojame DATABASE_URL iš aplinkos kintamųjų
-DATABASE_URL = os.environ.get("DATABASE_URL"")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 # Sukuriam variklį
 engine = create_engine(DATABASE_URL)
