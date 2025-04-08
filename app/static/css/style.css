@@ -166,3 +166,22 @@ button {
     color: red;
     margin-bottom: 10px;
 }
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+    .user-table th {
+        background-color: #2563eb;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .user-table td {
+        padding: 12px;
+        text-align: center;
+        background-color: #f1f5f9;
+    }
