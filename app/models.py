@@ -1,20 +1,18 @@
 ﻿from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
 
-# SQLite DB lokaliai (ar Render'e veiktų)
-DATABASE_URL = "sqlite:///./app.db"
+# Naudojame DATABASE_URL iš aplinkos kintamųjų
+DATABASE_URL = os.environ.get("DATABASE_URL"")
 
-# Sukuriamas variklis
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Sukuriam variklį
+engine = create_engine(DATABASE_URL)
 
-# Sesijos objektas darbui su DB
+# Sukuriam sesiją ir bazę
 SessionLocal = sessionmaker(bind=engine)
-
-# Bazinė klasė modeliams
 Base = declarative_base()
 
-# Vartotojo modelis
 class User(Base):
     __tablename__ = "users"
 
