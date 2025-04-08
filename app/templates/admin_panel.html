@@ -8,24 +8,29 @@
 <body>
     <div class="form-container">
         <h2>Vartotojų sąrašas</h2>
-        <table border="1" style="width:100%; margin-top: 20px;">
+
+        {% if users|length == 0 %}
+        <p>Nėra užsiregistravusių vartotojų.</p>
+        {% else %}
+        <table border="1" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Vartotojo vardas</th>
-                    <th>El. paštas</th>
+                <tr style="background-color: #2563eb; color: white;">
+                    <th style="padding: 10px;">ID</th>
+                    <th style="padding: 10px;">Vartotojo vardas</th>
+                    <th style="padding: 10px;">El. paštas</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
+                <tr style="text-align: center;">
+                    <td style="padding: 10px;">{{ user.id }}</td>
+                    <td style="padding: 10px;">{{ user.username }}</td>
+                    <td style="padding: 10px;">{{ user.email }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        {% endif %}
     </div>
 </body>
 </html>
