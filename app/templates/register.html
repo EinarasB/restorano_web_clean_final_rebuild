@@ -9,7 +9,7 @@
     <div class="form-container">
         <h2>Registracija</h2>
         {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p class="error">{{ error }}</p>
         {% endif %}
         <form action="/register" method="post">
             <input type="text" name="username" placeholder="Vartotojo vardas" required>
