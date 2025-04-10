@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <title>Restorano AI Meniu</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/script.js" defer></script>
 </head>
 <body>
     <div class="menu-wrapper">
+        <div class="cart">
+            🛒 Krepšelis: <span id="cart-count">0</span>
+        </div>
         <h1>Restorano AI Meniu</h1>
         <div class="menu-grid">
             <div class="menu-card">
@@ -15,6 +19,7 @@
                     <h3>Margarita</h3>
                     <p>Pomidorai, mocarela, bazilikas</p>
                     <span class="price">€7.99</span>
+                    <button class="add-to-cart" data-name="Margarita" data-price="7.99">Į krepšelį</button>
                 </div>
             </div>
             <div class="menu-card">
@@ -23,6 +28,7 @@
                     <h3>Cheeseburger</h3>
                     <p>Jautiena, sūris, padažas</p>
                     <span class="price">€8.49</span>
+                    <button class="add-to-cart" data-name="Cheeseburger" data-price="8.49">Į krepšelį</button>
                 </div>
             </div>
             <div class="menu-card">
@@ -31,6 +37,7 @@
                     <h3>Vištienos sriuba</h3>
                     <p>Lengva, švelni, karšta</p>
                     <span class="price">€4.99</span>
+                    <button class="add-to-cart" data-name="Vištienos sriuba" data-price="4.99">Į krepšelį</button>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-body {
+﻿body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: url('/static/images/food.jpg') no-repeat center center fixed;
@@ -239,3 +239,41 @@ button {
         font-weight: 600;
     }
 
+/* Kad nebūtų vaizdas per visą ekraną ir nukerpama pica */
+body {
+    height: auto;
+    min-height: 100vh;
+    display: block;
+    padding: 40px 20px;
+}
+
+/* Krepšelio skaičius viršuje */
+.cart {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Mygtukas Į krepšelį */
+.add-to-cart {
+    margin-top: 15px;
+    background-color: #22c55e;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+    .add-to-cart:hover {
+        background-color: #15803d;
+    }
