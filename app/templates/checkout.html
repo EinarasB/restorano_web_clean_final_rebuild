@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Užsakymo krepšelis</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/checkout.js" defer></script>
+</head>
+<body>
+    <div class="menu-wrapper">
+        <h1>Jūsų krepšelis</h1>
+
+        <div id="cart-items"></div>
+
+        <div class="checkout-section">
+            <h3>Apmokėjimo bŮbas</h3>
+            <form method="post" action="/checkout">
+                <select name="payment_method" required>
+                    <option value="kortele">Kortele</option>
+                    <option value="grynais">Grynais</option>
+                </select>
+                <input type="hidden" name="order_data" id="order-data">
+                <button type="submit" class="add-to-cart">Užsakyti</button>
+            </form>
+        </div>
+
+        <div class="button-group">
+            <a href="/menu" class="btn">← Grįžti atgal</a>
+        </div>
+    </div>
+</body>
+</html>

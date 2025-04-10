@@ -5,6 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
 from app.models import SessionLocal, User
+import json
+from app.models import Order, OrderItem  # Būtinai importuok ir naujus modelius
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -96,3 +98,43 @@ def guest_menu(request: Request):
 @router.get("/menu")
 def logged_in_menu(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
+
+    
+
+@router.get("/checkout")
+def checkout_page(request: Request):
+    return templates.TemplateResponse("checkout.html", {"request": request})
+
+
+@router.post("/checkout")
+def submit_order(
+    request: Request,
+    payment_method: str = Form(...),
+    order_data: str = Form(...)
+):
+    db = SessionLocal()
+    try:
+        # Sukuriam užsakymą
+        order = Order(payment_method=payment_method)
+        db.add(order)
+        db.commit()
+        db.refresh(order)  # Kad gautume order.id
+
+        items = json.loads(order_data)
+        for item in items:
+            order_item = OrderItem(
+                order_id=order.id,
+                name=item['name'],
+                quantity=item['quantity'],
+                price=item['price']
+            )
+            db.add(order_item)
+
+        db.commit()
+        return templates.TemplateResponse("checkout_success.html", {"request": request, "order_id": order.id})
+    except Exception as e:
+        db.rollback()
+        return templates.TemplateResponse("checkout.html", {"request": request, "error": f"Klaida: {e}"})
+    finally:
+        db.close()
+
