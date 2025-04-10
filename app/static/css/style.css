@@ -273,3 +273,101 @@ button {
         background-color: #15803d;
     }
 
+/* === Checkout (krepšelis) kortelės === */
+
+.cart-item-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.cart-info h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.cart-info p {
+    margin: 0 0 10px;
+    color: #555;
+    font-size: 14px;
+}
+
+.cart-info strong {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+    .quantity button {
+        padding: 6px 10px;
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        .quantity button:hover {
+            background-color: #1e40af;
+        }
+
+    .quantity span {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .quantity .remove {
+        background-color: #ef4444;
+        margin-left: auto;
+    }
+
+        .quantity .remove:hover {
+            background-color: #b91c1c;
+        }
+
+/* Checkout skyrius (forma ir grįžti) */
+
+.checkout-section {
+    margin-top: 40px;
+}
+
+    .checkout-section select {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    .checkout-section button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #22c55e;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        .checkout-section button[type="submit"]:hover {
+            background-color: #15803d;
+        }
