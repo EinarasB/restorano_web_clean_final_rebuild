@@ -1,13 +1,13 @@
 ﻿body {
     margin: 0;
+    padding-top: 80px; /* Pridėta viršutinė erdvė, kad nerodytų nukirstai */
     font-family: 'Segoe UI', sans-serif;
     background: url('/static/images/food.jpg') no-repeat center center fixed;
     background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    display: block; /* Nereikia flex čia */
+    min-height: 100vh;
 }
+
 
 
 .form-container {
