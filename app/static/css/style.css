@@ -348,3 +348,24 @@ button {
     object-fit: cover;
     border-radius: 8px;
 }
+
+.category-nav {
+    margin-bottom: 30px;
+}
+
+    .category-nav a {
+        display: inline-block;
+        margin: 0 12px;
+        padding: 10px 20px;
+        background-color: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+    }
+
+        .category-nav a:hover {
+            background-color: #1e40af;
+        }
