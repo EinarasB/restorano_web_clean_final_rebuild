@@ -240,33 +240,52 @@ button {
         }
 
 /* ==== ATSISKAITYMAS ==== */
-.checkout-section {
-    margin-top: 40px;
+.checkout-card {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
 }
 
-    .checkout-section select {
-        padding: 10px;
+    .checkout-card img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+.checkout-info h3 {
+    font-size: 18px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.checkout-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+    .checkout-buttons button {
+        padding: 8px 12px;
         font-size: 16px;
         border-radius: 6px;
-        border: 1px solid #ccc;
-        margin-bottom: 20px;
-    }
-
-    .checkout-section button[type="submit"] {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: bold;
-        background-color: #22c55e;
-        color: white;
         border: none;
-        border-radius: 8px;
         cursor: pointer;
         transition: background 0.3s;
+        background-color: #2563eb;
+        color: white; /* ❗ Ženklai balti */
     }
 
-        .checkout-section button[type="submit"]:hover {
-            background-color: #15803d;
+    .checkout-buttons .remove-btn {
+        background-color: #ef4444;
+    }
+
+        .checkout-buttons .remove-btn:hover {
+            background-color: #b91c1c;
         }
 
 .quantity {
@@ -303,10 +322,10 @@ button {
 
 /* Krepšelio bendras konteineris */
 #cart-items {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Kairė pusė */
-    padding-left: 60px; /* Atstumas nuo krašto */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 stulpeliai */
+    gap: 30px;
+    margin-top: 30px;
 }
 
 
