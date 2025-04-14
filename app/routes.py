@@ -1,5 +1,5 @@
 ﻿from fastapi import APIRouter, Request, Form
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -7,6 +7,35 @@ from starlette.status import HTTP_302_FOUND
 from app.models import SessionLocal, User
 import json
 from app.models import Order, OrderItem  # Būtinai importuok ir naujus modelius
+from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
+import openai
+
+load_dotenv()  # Kad veiktų .env
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+router = APIRouter()
+
+class ChatRequest(BaseModel):
+    message: str
+
+@router.post("/chat")
+async def chat_with_ai(request: ChatRequest):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu esi malonus padavėjas. Atsakyk apie meniu."},
+                {"role": "user", "content": request.message}
+            ],
+            temperature=0.7,
+            max_tokens=150
+        )
+        ai_reply = response.choices[0].message.content.strip()
+        return JSONResponse({"reply": ai_reply})
+    except Exception as e:
+        return JSONResponse({"reply": "Atsiprašome, įvyko klaida..."})
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
