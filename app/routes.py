@@ -4,19 +4,23 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
-from app.models import SessionLocal, User
-import json
-from app.models import Order, OrderItem  # Būtinai importuok ir naujus modelius
+from app.models import SessionLocal, User, Order, OrderItem
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 import openai
+import json
 
-load_dotenv()  # Kad veiktų .env
-
+load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-router = APIRouter()
 
+# ✅ TEISINGA vieta – sukuriam vieną kartą
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
+
+# ✅ NEPERRAŠOM šito vėl! Turi būti tik vieną kartą!
+
+# --- Chat maršrutas ---
 class ChatRequest(BaseModel):
     message: str
 
@@ -33,10 +37,12 @@ async def chat(request: Request):
                 {"role": "user", "content": message}
             ]
         )
-        reply = response["choices"][0]["message"]["content"]
+        reply = response.choices[0].message.content
         return JSONResponse(content={"reply": reply})
     except Exception as e:
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
+
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
