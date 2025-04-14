@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const cartCount = document.getElementById("cart-count");
 
     const updateCartCount = () => {
@@ -12,12 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", () => {
             const name = button.dataset.name;
             const price = parseFloat(button.dataset.price);
+            const image = button.closest(".menu-card").querySelector("img").getAttribute("src");
 
             const existingItem = cart.find(item => item.name === name);
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
-                cart.push({ name, price, quantity: 1 });
+                cart.push({ name, price, quantity: 1, image });
             }
 
             localStorage.setItem("cart", JSON.stringify(cart));

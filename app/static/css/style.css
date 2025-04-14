@@ -303,10 +303,12 @@ button {
 
 /* Krepšelio bendras konteineris */
 #cart-items {
-    text-align: left;
-    max-width: 700px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Kairė pusė */
+    padding-left: 60px; /* Atstumas nuo krašto */
 }
+
 
 /* Bendra viso užsakymo suma */
 .total-price {
