@@ -4,6 +4,19 @@
     const hiddenInput = document.getElementById("order-data");
     const form = document.querySelector("form");
 
+    // Žemėlapis tarp item pavadinimų ir paveikslėlių
+    const imageMap = {
+        "Margarita": "pica.jpg",
+        "Cheeseburger": "burger.jpg",
+        "Vištienos sriuba": "sriuba.jpg",
+        "Makaronai su vištiena": "pasta.jpg",
+        "Caesar salotos": "salotos.jpg",
+        "Jautienos kepsnys": "kepsnys.jpg",
+        "Šokoladinis pyragas": "desertas.jpg",
+        "Pankekai": "pankekai.jpg",
+        "Latte kava": "kava.jpg"
+    };
+
     const renderCart = () => {
         cartItemsContainer.innerHTML = "";
         let total = 0;
@@ -17,12 +30,14 @@
             const lineTotal = item.quantity * item.price;
             total += lineTotal;
 
+            const imageFile = imageMap[item.name] || "default.jpg";
+
             const card = document.createElement("div");
             card.className = "checkout-card";
 
             card.innerHTML = `
                 <div class="checkout-card-content">
-                    <img src="/static/images/${item.name.toLowerCase().replaceAll(" ", "")}.jpg" alt="${item.name}">
+                    <img src="/static/images/${imageFile}" alt="${item.name}" class="checkout-img">
                     <div class="checkout-info">
                         <h3>${item.name}</h3>
                         <p>Kiekis: ${item.quantity} &nbsp; | &nbsp; Kaina: €${item.price.toFixed(2)}</p>
@@ -41,8 +56,7 @@
 
         const totalElement = document.createElement("p");
         totalElement.innerHTML = `<strong>Viso: €${total.toFixed(2)}</strong>`;
-        totalElement.style.fontSize = "18px";
-        totalElement.style.marginTop = "20px";
+        totalElement.classList.add("total-price");
         cartItemsContainer.appendChild(totalElement);
 
         hiddenInput.value = JSON.stringify(cart);
