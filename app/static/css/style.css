@@ -169,21 +169,25 @@ button {
 
 /* ==== KREPŠELIO ELEMENTAI ==== */
 .cart-item-card {
-    background-color: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin: 20px 0;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
     .cart-item-card img {
         width: 100px;
         height: 100px;
         object-fit: cover;
-        border-radius: 10px;
+        border-radius: 8px;
     }
 
 .cart-info {
@@ -191,20 +195,20 @@ button {
 }
 
     .cart-info h3 {
-        margin: 0 0 10px;
+        margin: 0 0 8px;
         font-size: 18px;
         font-weight: 600;
     }
 
     .cart-info p {
-        margin: 0 0 5px;
-        color: #555;
+        margin: 4px 0;
         font-size: 14px;
+        color: #444;
     }
 
     .cart-info strong {
+        font-size: 16px;
         color: #2563eb;
-        font-weight: bold;
     }
 
 .cart-buttons {
@@ -264,3 +268,50 @@ button {
         .checkout-section button[type="submit"]:hover {
             background-color: #15803d;
         }
+
+.quantity {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+    .quantity button {
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        padding: 4px 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        .quantity button:hover {
+            background-color: #1e40af;
+        }
+
+    .quantity .remove {
+        background-color: #ef4444;
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+
+        .quantity .remove:hover {
+            background-color: #b91c1c;
+        }
+
+/* Krepšelio bendras konteineris */
+#cart-items {
+    text-align: left;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Bendra viso užsakymo suma */
+.total-price {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 30px;
+    text-align: center;
+}
