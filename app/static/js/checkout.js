@@ -85,3 +85,59 @@
 
     renderCart();
 });
+// === REKOMENDACIJŲ SISTEMA ===
+const allDishes = [
+    { name: "Kava", price: 2.49, image: "kava.jpg" },
+    { name: "Šokoladinis pyragas", price: 5.49, image: "desertas.jpg" },
+    { name: "Caesar salotos", price: 6.49, image: "salotos.jpg" },
+    { name: "Makaronai su vištiena", price: 9.49, image: "pasta.jpg" },
+    { name: "Pankekai", price: 4.99, image: "pankekai.jpg" },
+    { name: "Jautienos kepsnys", price: 13.99, image: "kepsnys.jpg" },
+    { name: "Latte kava", price: 2.49, image: "kava.jpg" },
+    { name: "Vištienos sriuba", price: 4.99, image: "sriuba.jpg" },
+    { name: "Margarita", price: 7.99, image: "pica.jpg" },
+    { name: "Cheeseburger", price: 8.49, image: "burger.jpg" },
+];
+
+function generateRecommendations() {
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartNames = cartItems.map(item => item.name);
+    const recWrapper = document.getElementById("recommendations");
+    if (!recWrapper) return;
+
+    // Logika: rekomenduojame tuos, kurie dar nepasirinkti
+    const suggestions = allDishes.filter(d => !cartNames.includes(d.name)).slice(0, 3); // top 3
+
+    suggestions.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "menu-card";
+        card.innerHTML = `
+            <img src="/static/images/${item.image}" alt="${item.name}">
+            <div class="menu-info">
+                <h3>${item.name}</h3>
+                <span class="price">€${item.price.toFixed(2)}</span>
+                <button class="add-to-cart" data-name="${item.name}" data-price="${item.price}">Į krepšelį</button>
+            </div>
+        `;
+        recWrapper.appendChild(card);
+    });
+
+    // Pridedam veikimą "Į krepšelį" mygtukams
+    recWrapper.addEventListener("click", function (e) {
+        if (e.target.classList.contains("add-to-cart")) {
+            const name = e.target.dataset.name;
+            const price = parseFloat(e.target.dataset.price);
+            const existing = cartItems.find(i => i.name === name);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cartItems.push({ name, price, quantity: 1 });
+            }
+            localStorage.setItem("cart", JSON.stringify(cartItems));
+            location.reload(); // kad atsinaujintų krepšelis
+        }
+    });
+}
+
+// Paleidžiam po visko
+generateRecommendations();
