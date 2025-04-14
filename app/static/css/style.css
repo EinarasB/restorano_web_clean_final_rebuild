@@ -271,13 +271,16 @@ button {
 
     .checkout-buttons button {
         padding: 8px 12px;
-        font-size: 16px;
+        font-size: 20px;
+        font-weight: bold;
         border-radius: 6px;
         border: none;
         cursor: pointer;
         transition: background 0.3s;
         background-color: #2563eb;
-        color: white; /* ❗ Ženklai balti */
+        color: white;
+        /* Pridedam šešėlį ženklams */
+        text-shadow: 0 0 2px #000;
     }
 
     .checkout-buttons .remove-btn {
@@ -287,6 +290,7 @@ button {
         .checkout-buttons .remove-btn:hover {
             background-color: #b91c1c;
         }
+
 
 .quantity {
     display: flex;
@@ -331,11 +335,12 @@ button {
 
 /* Bendra viso užsakymo suma */
 .total-price {
-    font-size: 18px;
-    font-weight: 600;
-    margin-top: 30px;
     text-align: center;
+    margin: 30px auto 0;
+    font-size: 20px;
+    font-weight: bold;
 }
+
 
 .checkout-img {
     width: 100px;
