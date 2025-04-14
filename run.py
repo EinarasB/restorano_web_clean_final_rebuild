@@ -6,6 +6,9 @@ from app.routes import router as register_router
 from app.models import Base, engine
 import uvicorn
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # 1. Sukuriame FastAPI instancą
 app = FastAPI()

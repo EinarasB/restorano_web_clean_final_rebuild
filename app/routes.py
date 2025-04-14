@@ -21,21 +21,22 @@ class ChatRequest(BaseModel):
     message: str
 
 @router.post("/chat")
-async def chat_with_ai(request: ChatRequest):
+async def chat(request: Request):
+    data = await request.json()
+    message = data.get("message")
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu esi malonus padavėjas. Atsakyk apie meniu."},
-                {"role": "user", "content": request.message}
-            ],
-            temperature=0.7,
-            max_tokens=150
+                {"role": "system", "content": "Tu esi draugiškas padavėjas restorane, padėk klientui pasirinkti."},
+                {"role": "user", "content": message}
+            ]
         )
-        ai_reply = response.choices[0].message.content.strip()
-        return JSONResponse({"reply": ai_reply})
+        reply = response["choices"][0]["message"]["content"]
+        return JSONResponse(content={"reply": reply})
     except Exception as e:
-        return JSONResponse({"reply": "Atsiprašome, įvyko klaida..."})
+        return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")

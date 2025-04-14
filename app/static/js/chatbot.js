@@ -1,33 +1,48 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
-    const chatForm = document.getElementById("chat-form");
+﻿// === public/js/chatbot.js ===
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("chat-toggle");
+    const chatWidget = document.getElementById("chat-widget");
+    const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
-    const chatWindow = document.getElementById("chat-messages");
+    const sendBtn = document.getElementById("send-btn");
 
-    chatForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const userText = chatInput.value.trim();
-        if (!userText) return;
-
-        // Pridėti vartotojo žinutę
-        appendMessage("Jūs", userText, "user");
-        chatInput.value = "";
-
-        // Siųsti į serverį
-        const response = await fetch("/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userText })
-        });
-
-        const data = await response.json();
-        appendMessage("Padavėjas AI", data.reply, "bot");
+    toggleBtn.addEventListener("click", () => {
+        chatWidget.classList.toggle("active");
     });
 
-    function appendMessage(sender, text, role) {
-        const msg = document.createElement("div");
-        msg.className = "message " + role;
-        msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-        chatWindow.appendChild(msg);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
+    const addMessage = (sender, text, isUser = false) => {
+        const p = document.createElement("p");
+        p.innerHTML = `<strong class="${isUser ? 'user' : 'ai'}">${sender}:</strong> ${text}`;
+        chatMessages.appendChild(p);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    const askAI = async (question) => {
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: question })
+            });
+            const data = await response.json();
+            addMessage("Padavėjas AI", data.reply, false);
+        } catch (e) {
+            addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida.", false);
+        }
+    };
+
+    sendBtn.addEventListener("click", () => {
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+        addMessage("Jūs", msg, true);
+        chatInput.value = "";
+        askAI(msg);
+    });
+
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendBtn.click();
+    });
+
+    // Pasveikinimas
+    addMessage("Padavėjas AI", "Sveiki! Kuo galiu padėti šiandien? 😊");
 });
