@@ -1,5 +1,4 @@
-﻿// === public/js/chatbot.js ===
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
     const chatMessages = document.getElementById("chat-messages");
@@ -24,10 +23,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: question })
             });
+
             const data = await response.json();
-            addMessage("Padavėjas AI", data.reply, false);
+
+            // 🔍 DEBUG: parodyti konsolėje ką gavom
+            console.log("🧠 GPT atsakymas:", data);
+
+            const reply = data.reply || "🤖 Atsiprašau, šiuo metu negaliu atsakyti.";
+            addMessage("Padavėjas AI", reply, false);
         } catch (e) {
-            addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida.", false);
+            console.error("💥 Klaida:", e);
+            addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida jungiantis prie serverio.", false);
         }
     };
 
