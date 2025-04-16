@@ -9,17 +9,17 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
-import openai
 import json
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
-
-# Inicijuojam naują OpenAI klientą
 client = OpenAI(api_key=openai_api_key)
 
+# ✅ ČIA VIENAS router
 router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
 
+# ======== AI CHAT ==========
 class ChatRequest(BaseModel):
     message: str
 
@@ -27,7 +27,7 @@ class ChatRequest(BaseModel):
 async def chat_endpoint(req: ChatRequest):
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",  # Arba gpt-4, gpt-3.5-turbo
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Tu esi draugiškas padavėjas restorane, kuris padeda klientams pasirinkti patiekalus ir atsako į klausimus."},
                 {"role": "user", "content": req.message}
@@ -38,17 +38,10 @@ async def chat_endpoint(req: ChatRequest):
     except Exception as e:
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
 
-
-
-router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
-
-
-# REGISTRACIJA
+# ======== REGISTRACIJA ==========
 @router.get("/register")
 def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
-
 
 @router.post("/register")
 def register_user(
@@ -74,12 +67,10 @@ def register_user(
     finally:
         db.close()
 
-
-# PRISIJUNGIMAS
+# ======== PRISIJUNGIMAS ==========
 @router.get("/login")
 def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
-
 
 @router.post("/login")
 def login_user(
@@ -97,12 +88,10 @@ def login_user(
         error = "Neteisingas vartotojo vardas arba slaptažodis."
         return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
-
-# ADMIN
+# ======== ADMIN ==========
 @router.get("/admin")
 def admin_login_form(request: Request):
     return templates.TemplateResponse("admin_login.html", {"request": request})
-
 
 @router.post("/admin")
 def admin_login(
@@ -119,24 +108,19 @@ def admin_login(
         error = "Neteisingas vartotojo vardas arba slaptažodis."
         return templates.TemplateResponse("admin_login.html", {"request": request, "error": error})
 
-
-# SVEČIAS
+# ======== MENIU ==========
 @router.get("/guest")
 def guest_menu(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
 
-
-# PRISIJUNGĘ / REGISTRUOTI
 @router.get("/menu")
 def logged_in_menu(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
 
-    
-
+# ======== CHECKOUT ==========
 @router.get("/checkout")
 def checkout_page(request: Request):
     return templates.TemplateResponse("checkout.html", {"request": request})
-
 
 @router.post("/checkout")
 def submit_order(
@@ -146,11 +130,10 @@ def submit_order(
 ):
     db = SessionLocal()
     try:
-        # Sukuriam užsakymą
         order = Order(payment_method=payment_method)
         db.add(order)
         db.commit()
-        db.refresh(order)  # Kad gautume order.id
+        db.refresh(order)
 
         items = json.loads(order_data)
         for item in items:
@@ -169,4 +152,3 @@ def submit_order(
         return templates.TemplateResponse("checkout.html", {"request": request, "error": f"Klaida: {e}"})
     finally:
         db.close()
-
