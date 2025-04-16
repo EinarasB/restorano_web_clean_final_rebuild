@@ -13,8 +13,9 @@ import json
 import traceback
 
 load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY").strip()
 client = OpenAI(api_key=openai_api_key)
+
 
 print("🔐 API KEY:", openai_api_key)
 
