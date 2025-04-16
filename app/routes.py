@@ -16,6 +16,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 # ✅ ČIA VIENAS router
+router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 # ======== AI CHAT ==========
