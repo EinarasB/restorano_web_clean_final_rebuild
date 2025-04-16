@@ -37,12 +37,37 @@ async def chat_endpoint(req: ChatRequest):
     try:
         print("🧠 Gauta žinutė:", req.message)
         response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "Tu esi draugiškas padavėjas restorane, kuris padeda klientams pasirinkti patiekalus ir atsako į klausimus."},
-                {"role": "user", "content": req.message}
-            ]
-        )
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "Tu esi draugiškas padavėjas restorane. Pateik tik šiuos patiekalus iš meniu ir nerekomenduok nieko daugiau:\n\n"
+                "🍽️ Karštieji:\n"
+                "- Margarita (Pomidorai, mocarela, bazilikas)\n"
+                "- Cheeseburger (Jautiena, sūris, padažas)\n"
+                "- Vištienos sriuba\n"
+                "- Makaronai su vištiena\n"
+                "- Jautienos kepsnys\n\n"
+                "🥗 Salotos:\n"
+                "- Caesar salotos (Vištiena, salotos, parmezanas, krutonai)\n\n"
+                "🍰 Desertai:\n"
+                "- Šokoladinis pyragas\n"
+                "- Pankekai\n\n"
+                "☕ Gėrimai:\n"
+                "- Latte kava\n"
+                "- Coca-Cola\n"
+                "- Žalioji arbata\n\n"
+                "Atsakinėk trumpai, suprantamai, ir nefantazuok patiekalų kurių nėra."
+            )
+        },
+        {
+            "role": "user",
+            "content": req.message
+        }
+    ]
+)
+
         reply = response.choices[0].message.content
         return JSONResponse(content={"reply": reply})
     except Exception as e:
