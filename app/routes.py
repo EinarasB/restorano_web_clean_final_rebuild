@@ -13,11 +13,15 @@ import json
 import traceback
 
 load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY").strip()
+openai_api_key = os.getenv("OPENAI_API_KEY", "").replace("\n", "").strip()
+
+# 💡 Saugumo dėlei tikrina ar raktas įkeltas
+if not openai_api_key:
+    raise ValueError("❌ Nepavyko gauti OpenAI API rakto!")
+
+print("🔐 API KEY:", openai_api_key[:8] + "..." + openai_api_key[-4:])  # Trumpesnis debug
+
 client = OpenAI(api_key=openai_api_key)
-
-
-print("🔐 API KEY:", openai_api_key)
 
 
 # ✅ ČIA VIENAS router
