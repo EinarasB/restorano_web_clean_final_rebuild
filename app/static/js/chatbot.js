@@ -29,8 +29,13 @@
             // 🔍 DEBUG: parodyti konsolėje ką gavom
             console.log("🧠 GPT atsakymas:", data);
 
-            const reply = data.reply || "🤖 Atsiprašau, šiuo metu negaliu atsakyti.";
-            addMessage("Padavėjas AI", reply, false);
+            if (data.reply) {
+                addMessage("Padavėjas AI", data.reply, false);
+            } else {
+                addMessage("Padavėjas AI", "🤖 Atsiprašau, atsakymas negautas (data.reply is undefined)", false);
+                console.error("❗ Neatėjo 'reply':", data);
+            }
+
         } catch (e) {
             console.error("💥 Klaida:", e);
             addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida jungiantis prie serverio.", false);
