@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import os
 import json
+import traceback
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -29,6 +30,7 @@ class ChatRequest(BaseModel):
 @router.post("/chat")
 async def chat_endpoint(req: ChatRequest):
     try:
+        print("🧠 Gauta žinutė:", req.message)
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -39,6 +41,8 @@ async def chat_endpoint(req: ChatRequest):
         reply = response.choices[0].message.content
         return JSONResponse(content={"reply": reply})
     except Exception as e:
+        print("💥 Klaida:", e)
+        traceback.print_exc()  # <-- ŠITA PARODYS PILNĄ KLAIDĄ!
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
 
 # ======== REGISTRACIJA ==========
