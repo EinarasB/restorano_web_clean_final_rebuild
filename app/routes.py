@@ -7,34 +7,30 @@ from starlette.status import HTTP_302_FOUND
 from app.models import SessionLocal, User, Order, OrderItem
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from openai import OpenAI
 import os
 import openai
 import json
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
-# ✅ TEISINGA vieta – sukuriam vieną kartą
+# Inicijuojam naują OpenAI klientą
+client = OpenAI(api_key=openai_api_key)
+
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
 
-# ✅ NEPERRAŠOM šito vėl! Turi būti tik vieną kartą!
-
-# --- Chat maršrutas ---
 class ChatRequest(BaseModel):
     message: str
 
 @router.post("/chat")
-async def chat(request: Request):
-    data = await request.json()
-    message = data.get("message")
-
+async def chat_endpoint(req: ChatRequest):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4o",  # Arba gpt-4, gpt-3.5-turbo
             messages=[
-                {"role": "system", "content": "Tu esi draugiškas padavėjas restorane, padėk klientui pasirinkti."},
-                {"role": "user", "content": message}
+                {"role": "system", "content": "Tu esi draugiškas padavėjas restorane, kuris padeda klientams pasirinkti patiekalus ir atsako į klausimus."},
+                {"role": "user", "content": req.message}
             ]
         )
         reply = response.choices[0].message.content
