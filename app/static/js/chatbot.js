@@ -68,26 +68,29 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            console.log("🧠 GPT atsakymas (pilnas objektas):", data);
+            const reply = data.reply;
 
-            const raw = typeof data.reply === "string" ? data.reply.trim() : "";
-            let actions = [];
+            console.log("🧠 GPT atsakymas (data.reply):", reply);
 
-            // Bandome ištraukti visus JSON objektus iš teksto
-            const regex = /{[^}]+}/g;
-            const matches = raw.match(regex);
+            // Jei jau yra objektas – konvertuojam į string (tik debugui)
+            const rawText = typeof reply === "object" ? JSON.stringify(reply) : reply;
+
+            // Bandome ištraukti visus JSON objektus iš stringo
+            const actions = [];
+            const regex = /{[^{}]+}/g;
+            const matches = rawText.match(regex);
             if (matches) {
-                matches.forEach(str => {
+                for (const match of matches) {
                     try {
-                        const parsed = JSON.parse(str);
-                        if (parsed.action) actions.push(parsed);
+                        const obj = JSON.parse(match);
+                        actions.push(obj);
                     } catch (e) {
-                        console.warn("❌ Nevalidus JSON veiksmas:", str);
+                        console.warn("❌ Nevalidus JSON blokas:", match);
                     }
-                });
+                }
             }
 
-            // Jei turim veiksmų – vykdom juos
+            // Jei pavyko ištraukti veiksmus
             if (actions.length > 0) {
                 for (const act of actions) {
                     const qty = act.quantity || 1;
@@ -98,13 +101,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         else addMessage("Sistema", `❌ Nepavyko pridėti: ${act.item}`, false);
                     }
 
-                    if (act.action === "remove_from_cart") {
+                    else if (act.action === "remove_from_cart") {
                         const success = removeFromCart(act.item);
                         if (success) addMessage("Sistema", `🗑️ Pašalinta: ${act.item}`, false);
                         else addMessage("Sistema", `⚠️ Nerasta: ${act.item}`, false);
                     }
 
-                    if (act.action === "get_cart") {
+                    else if (act.action === "get_cart") {
                         if (cart.length === 0) {
                             addMessage("Sistema", "🛒 Krepšelis tuščias.", false);
                         } else {
@@ -113,28 +116,37 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
 
-                    if (act.action === "get_total") {
+                    else if (act.action === "get_total") {
                         const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
                         addMessage("Sistema", `💰 Iš viso: €${total.toFixed(2)}`, false);
                     }
 
-                    if (act.action === "daily_offer") {
-                        const suggestions = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
-                        suggestions.forEach(item => simulateAdd(item, 1));
-                        addMessage("Dienos pasiūlymas", suggestions.join(" + "), false);
+                    else if (act.action === "filter_price") {
+                        const max = act.max_price;
+                        const cheap = cart.filter(i => i.price <= max);
+                        if (cheap.length === 0) return addMessage("Sistema", `🔍 Nėra nieko iki €${max}`, false);
+                        const result = cheap.map(i => `${i.name} (€${i.price})`).join(", ");
+                        addMessage("Filtras", `Patiekalai iki €${max}: ${result}`, false);
+                    }
+
+                    else if (act.action === "daily_offer") {
+                        const offerItems = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
+                        offerItems.forEach(name => simulateAdd(name));
+                        addMessage("Dienos pasiūlymas", `✅ Įdėti: ${offerItems.join(", ")}`, false);
                     }
                 }
                 return;
             }
 
-            // Jei tai ne JSON ir nėra veiksmų – rodom tekstą
-            addMessage("Padavėjas AI", raw || "🤖 Atsiprašau, negaliu atsakyti.", false);
+            // Jei ne JSON, rodom tekstą
+            addMessage("Padavėjas AI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
             console.error("💥 Klaida:", e);
             addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
+
 
 
     sendBtn.addEventListener("click", () => {
