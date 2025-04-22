@@ -444,4 +444,66 @@ button {
     font-weight: bold;
     width: 100%;
 }
+/* === Mobilus ekranas === */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .menu-wrapper {
+        padding: 10px;
+    }
+
+    .menu-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .menu-card {
+        width: 100%;
+    }
+
+        .menu-card img {
+            width: 100%;
+            height: auto;
+        }
+
+    .category-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    #chat-widget {
+        width: 100%;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        max-height: 40vh;
+    }
+
+    #chat-input {
+        width: 70%;
+    }
+
+    #send-btn, #mic-btn {
+        width: 15%;
+        font-size: 1rem;
+    }
+
+    #chat-messages {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .cart {
+        font-size: 1rem;
+        padding: 8px;
+    }
+}
+
 
