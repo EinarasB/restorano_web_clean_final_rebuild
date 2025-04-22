@@ -1,4 +1,5 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿// === chatbot.js (atnaujinta) ===
+document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
     const chatMessages = document.getElementById("chat-messages");
@@ -16,6 +17,18 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
+    const simulateClick = (itemName) => {
+        const buttons = document.querySelectorAll(".add-to-cart");
+        for (let btn of buttons) {
+            const name = btn.getAttribute("data-name")?.toLowerCase();
+            if (name && name.includes(itemName.toLowerCase())) {
+                btn.click();
+                return true;
+            }
+        }
+        return false;
+    };
+
     const askAI = async (question) => {
         try {
             const response = await fetch("/chat", {
@@ -25,20 +38,27 @@
             });
 
             const data = await response.json();
-
-            // 🔍 DEBUG: parodyti konsolėje ką gavom
             console.log("🧠 GPT atsakymas:", data);
 
             if (data.reply) {
                 addMessage("Padavėjas AI", data.reply, false);
+            } else if (data.action === "add_to_cart" && data.item) {
+                addMessage("Padavėjas AI", `Pridedu į krepšelį: ${data.item}`, false);
+                simulateClick(data.item);
             } else {
-                addMessage("Padavėjas AI", "🤖 Atsiprašau, atsakymas negautas (data.reply is undefined)", false);
-                console.error("❗ Neatėjo 'reply':", data);
+                addMessage("Padavėjas AI", "🤖 Atsiprašau, nesupratau užklausos.", false);
             }
 
+
+            // Automatizuotas veiksmų atlikimas
+            if (data.action === "add_to_cart" && data.item) {
+                const success = simulateClick(data.item);
+                if (success) addMessage("Sistema", `✅ ${data.item} pridėtas į krepšelį automatiškai.`, false);
+                else addMessage("Sistema", `❌ Nepavyko pridėti ${data.item} - nerasta.`);
+            }
         } catch (e) {
             console.error("💥 Klaida:", e);
-            addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida jungiantis prie serverio.", false);
+            addMessage("Padavėjas AI", "Atsiprašome, įvykė serverio klaida.", false);
         }
     };
 
@@ -54,6 +74,5 @@
         if (e.key === "Enter") sendBtn.click();
     });
 
-    // Pasveikinimas
     addMessage("Padavėjas AI", "Sveiki! Kuo galiu padėti šiandien? 😊");
 });
