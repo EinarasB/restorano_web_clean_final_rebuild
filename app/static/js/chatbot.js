@@ -18,14 +18,17 @@
 
     const simulateClick = (itemName) => {
         const buttons = document.querySelectorAll(".add-to-cart");
-        for (let btn of buttons) {
-            const name = btn.getAttribute("data-name")?.toLowerCase();
-            if (name && name.includes(itemName.toLowerCase())) {
+        let found = false;
+        buttons.forEach(btn => {
+            const btnName = btn.dataset.name?.toLowerCase();
+            const targetName = itemName.toLowerCase();
+            if (btnName === targetName) {
+                console.log("🔘 Paspaudžiam mygtuką:", btnName);
                 btn.click();
-                return true;
+                found = true;
             }
-        }
-        return false;
+        });
+        return found;
     };
 
     const askAI = async (question) => {
@@ -37,36 +40,27 @@
             });
 
             const data = await response.json();
-            console.log("🧠 GPT atsakymas:", data);
+            console.log("🧠 GPT atsakymas (data.reply):", data.reply);
 
             let parsed = null;
-
             try {
                 parsed = JSON.parse(data.reply);
+                console.log("📦 Parsuotas JSON:", parsed);
             } catch {
-                // Jei ne JSON – paliekam parsed null
+                console.warn("⚠️ Atsakymas nėra JSON, rodome tekstą.");
             }
 
             if (parsed && parsed.action === "add_to_cart" && parsed.item) {
-                addMessage("Padavėjas AI", `✅ Patiekalas "${parsed.item}" įdėtas į krepšelį.`, false);
-
-                const buttons = document.querySelectorAll(".add-to-cart");
-                let found = false;
-                buttons.forEach(btn => {
-                    if (btn.dataset.name.toLowerCase() === parsed.item.toLowerCase()) {
-                        btn.click();
-                        found = true;
-                    }
-                });
-
-                if (!found) {
-                    addMessage("Padavėjas AI", `⚠️ Neradau patiekalo pavadinimu "${parsed.item}".`, false);
+                const success = simulateClick(parsed.item);
+                if (success) {
+                    addMessage("Padavėjas AI", `✅ Patiekalas „${parsed.item}“ įdėtas į krepšelį.`, false);
+                } else {
+                    addMessage("Padavėjas AI", `⚠️ Nepavyko pridėti – neradau patiekalo pavadinimu „${parsed.item}“.`, false);
                 }
-
                 return;
             }
 
-            // Jei nebuvo JSON arba veiksmo
+            // Ne JSON atsakymas
             addMessage("Padavėjas AI", data.reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
