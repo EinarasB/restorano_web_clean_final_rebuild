@@ -27,19 +27,28 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const simulateAdd = (itemName, quantity = 1) => {
+        const buttons = document.querySelectorAll(".add-to-cart");
         let found = false;
         for (let i = 0; i < quantity; i++) {
-            const buttons = document.querySelectorAll(".add-to-cart");
             buttons.forEach(btn => {
-                const btnName = btn.dataset.name.toLowerCase();
-                if (btnName.includes(itemName.toLowerCase())) {
+                if (btn.dataset.name.toLowerCase() === itemName.toLowerCase()) {
                     btn.click();
                     found = true;
                 }
             });
         }
+
+        // 💡 Atsinaujina lokalų krepšelio vaizdą
+        if (found) {
+            const updated = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.length = 0;
+            cart.push(...updated);
+            updateCartCount();
+        }
+
         return found;
     };
+
 
     const removeFromCart = (itemName) => {
         const index = cart.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
