@@ -40,14 +40,43 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
             console.log("🧠 GPT atsakymas:", data);
 
-            if (data.reply) {
-                addMessage("Padavėjas AI", data.reply, false);
-            } else if (data.action === "add_to_cart" && data.item) {
-                addMessage("Padavėjas AI", `Pridedu į krepšelį: ${data.item}`, false);
-                simulateClick(data.item);
-            } else {
-                addMessage("Padavėjas AI", "🤖 Atsiprašau, nesupratau užklausos.", false);
+            // Pabandome parsininti atsakymą kaip JSON
+            try {
+                const parsed = JSON.parse(data.reply);
+
+                if (parsed.action === "add_to_cart" && parsed.item) {
+                    addMessage("Padavėjas AI", `✅ Patiekalas „${parsed.item}“ įdėtas į krepšelį.`, false);
+
+                    // Surandam mygtuką pagal pavadinimą ir "paspaudžiam"
+                    const buttons = document.querySelectorAll(".add-to-cart");
+                    let found = false;
+                    buttons.forEach(btn => {
+                        if (btn.dataset.name.toLowerCase() === parsed.item.toLowerCase()) {
+                            btn.click();
+                            found = true;
+                        }
+                    });
+
+                    if (!found) {
+                        addMessage("Padavėjas AI", `⚠️ Neradau patiekalo pavadinimu „${parsed.item}“.`, false);
+                    }
+
+                    return;
+                }
+            } catch (jsonErr) {
+                // Ne JSON atsakymas – rodom kaip tekstą
+                console.log("ℹ️ Atsakymas ne JSON, rodom tekstą");
             }
+
+            // Jeigu nėra JSON arba action, rodome kaip paprastą žinutę
+            addMessage("Padavėjas AI", data.reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
+
+        } catch (e) {
+            console.error("💥 Klaida:", e);
+            addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida jungiantis prie serverio.", false);
+        }
+    };
+
 
 
             // Automatizuotas veiksmų atlikimas
