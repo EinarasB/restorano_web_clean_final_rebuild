@@ -60,42 +60,62 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            console.log("\ud83e\udde0 GPT atsakymas (data.reply):", data.reply);
+            console.log("🧠 GPT atsakymas (data.reply):", data.reply);
 
-            try {
-                const parsed = JSON.parse(data.reply);
+            // Jei atsakymas jau yra JSON objektas (ne tekstas)
+            let parsed = typeof data.reply === "object" ? data.reply : null;
+
+            if (!parsed) {
+                try {
+                    parsed = JSON.parse(data.reply);
+                } catch {
+                    console.warn("⚠️ Nepavyko JSON.parse – rodome kaip tekstą");
+                }
+            }
+
+            if (parsed && parsed.action) {
+                const qty = parsed.quantity || 1;
 
                 if (parsed.action === "add_to_cart") {
-                    const qty = parsed.quantity || 1;
                     const success = simulateAdd(parsed.item, qty);
                     if (success) addMessage("Sistema", `✅ Įdėta ${qty} x ${parsed.item}`, false);
                     else addMessage("Sistema", `❌ Nepavyko pridėti „${parsed.item}"`, false);
-                } else if (parsed.action === "remove_from_cart") {
+                }
+
+                else if (parsed.action === "remove_from_cart") {
                     const success = removeFromCart(parsed.item);
                     if (success) addMessage("Sistema", `🗑️ Pašalinta: ${parsed.item}`, false);
                     else addMessage("Sistema", `⚠️ Neradau: ${parsed.item}`, false);
-                } else if (parsed.action === "get_cart") {
+                }
+
+                else if (parsed.action === "get_cart") {
                     if (cart.length === 0) return addMessage("Sistema", "🛒 Krepšelis tuščias.", false);
                     const list = cart.map(i => `- ${i.name} x ${i.quantity}`).join("<br>");
                     addMessage("Krepšelis", list, false);
-                } else if (parsed.action === "get_total") {
+                }
+
+                else if (parsed.action === "get_total") {
                     const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
                     addMessage("Sistema", `💰 Iš viso: €${total.toFixed(2)}`, false);
-                } else if (parsed.action === "filter_price") {
+                }
+
+                else if (parsed.action === "filter_price") {
                     const max = parsed.max_price;
                     const cheap = cart.filter(i => i.price <= max);
                     if (cheap.length === 0) return addMessage("Sistema", `🔍 Nėra nieko iki €${max}`, false);
                     const result = cheap.map(i => `${i.name} (€${i.price})`).join(", ");
                     addMessage("Filtras", `Patiekalai iki €${max}: ${result}`, false);
-                } else if (parsed.action === "daily_offer") {
+                }
+
+                else if (parsed.action === "daily_offer") {
                     const suggestions = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
                     addMessage("Dienos pasiūlymas", suggestions.join(" + "), false);
                 }
+
                 return;
-            } catch (err) {
-                console.log("⚠️ Nepavyko JSON.parse – rodome kaip tekstą");
             }
 
+            // Jei nėra veiksmo – tiesiog tekstas
             addMessage("Padavėjas AI", data.reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
@@ -103,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
             addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
+
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();
