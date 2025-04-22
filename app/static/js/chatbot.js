@@ -60,16 +60,19 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            console.log("🧠 GPT atsakymas (data.reply):", data.reply);
+            console.log("🧠 GPT atsakymas (pilnas objektas):", data);
 
-            // Jei atsakymas jau yra JSON objektas (ne tekstas)
-            let parsed = typeof data.reply === "object" ? data.reply : null;
+            let parsed = null;
 
-            if (!parsed) {
+            if (typeof data === "object" && data.action) {
+                parsed = data;
+            } else if (typeof data.reply === "object") {
+                parsed = data.reply;
+            } else if (typeof data.reply === "string") {
                 try {
                     parsed = JSON.parse(data.reply);
                 } catch {
-                    console.warn("⚠️ Nepavyko JSON.parse – rodome kaip tekstą");
+                    console.warn("⚠️ Ne JSON, laikom tekstu");
                 }
             }
 
@@ -115,14 +118,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Jei nėra veiksmo – tiesiog tekstas
-            addMessage("Padavėjas AI", data.reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
+            // Jei ne action ir ne reply – laikom tekstu
+            const fallback = typeof data.reply === "string" ? data.reply : JSON.stringify(data);
+            addMessage("Padavėjas AI", fallback || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
             console.error("💥 Klaida:", e);
             addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
+
 
 
     sendBtn.addEventListener("click", () => {
