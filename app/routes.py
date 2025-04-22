@@ -38,43 +38,44 @@ async def chat_endpoint(req: ChatRequest):
         print("🧠 Gauta žinutė:", req.message)
 
         response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {
-            "role": "system",
-            "content": (
-                "Tu esi restorano padavėjas. "
-                "Kai klientas nori įdėti patiekalą į krepšelį, "
-                "grąžink JSON formatu: {\"action\": \"add_to_cart\", \"item\": \"Patiekalo pavadinimas\"}. "
-                "Jei klientas tiesiog klausia, atsakyk laisvu tekstu kaip padavėjas. "
-                "Galimi patiekalai yra:\n"
-                "Margarita, Cheeseburger, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
-                "Caesar salotos, Šokoladinis pyragas, Pankekai, Latte kava, Coca-Cola, Žalioji arbata.\n"
-                "Nefantazuok ir nesiūlyk kitų patiekalų."
-            )
-        },
-        {
-            "role": "user",
-            "content": req.message
-        }
-    ]
-)
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Tu esi restorano padavėjas. "
+                        "Kai klientas nori įdėti patiekalą į krepšelį, "
+                        "grąžink JSON formatu kaip tekstą: {\"action\": \"add_to_cart\", \"item\": \"Patiekalo pavadinimas\"}. "
+                        "Jei klientas tiesiog klausia, atsakyk laisvu tekstu kaip padavėjas. "
+                        "Galimi patiekalai yra:\n"
+                        "Margarita, Cheeseburger, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
+                        "Caesar salotos, Šokoladinis pyragas, Pankekai, Latte kava, Coca-Cola, Žalioji arbata.\n"
+                        "Nefantazuok ir nesiūlyk kitų patiekalų."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": req.message
+                }
+            ]
+        )
 
-
-        # Atskirti struktūrizuotą JSON (kai nori pridėti į krepšelį)
+        # Gauta AI žinutė
         content = response.choices[0].message.content.strip()
         print("📩 AI atsakymas:", content)
 
+        # Bandome parsininti ar tai JSON (pavyzdžiui {"action": "...", "item": "..."})
         try:
-            data = json.loads(content)
-            return JSONResponse(content=data)
+            parsed_json = json.loads(content)
+            return JSONResponse(content={"reply": content})  # grąžina kaip tekstą su "reply" raktu
         except json.JSONDecodeError:
-            return JSONResponse(content={"reply": content})
+            return JSONResponse(content={"reply": content})  # ir tekstą irgi su "reply"
 
     except Exception as e:
         print("💥 Klaida:", e)
         traceback.print_exc()
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
+
 
 
 # ======== REGISTRACIJA ==========
