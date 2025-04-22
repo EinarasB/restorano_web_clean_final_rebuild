@@ -38,28 +38,28 @@ async def chat_endpoint(req: ChatRequest):
         print("🧠 Gauta žinutė:", req.message)
 
         response = client.chat.completions.create(
-            model="gpt-4o",
-            response_format="json",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Tu esi restorano padavėjas. "
-                        "Kai klientas nori įdėti patiekalą į krepšelį, "
-                        "grąžink JSON formatu: {\"action\": \"add_to_cart\", \"item\": \"Patiekalo pavadinimas\"}. "
-                        "Jei klientas tiesiog klausia, atsakyk laisvu tekstu kaip padavėjas. "
-                        "Galimi patiekalai yra:\n"
-                        "Margarita, Cheeseburger, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
-                        "Caesar salotos, Šokoladinis pyragas, Pankekai, Latte kava, Coca-Cola, Žalioji arbata.\n"
-                        "Nefantazuok ir nesiūlyk kitų patiekalų."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": req.message
-                }
-            ]
-        )
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "Tu esi restorano padavėjas. "
+                "Kai klientas nori įdėti patiekalą į krepšelį, "
+                "grąžink JSON formatu: {\"action\": \"add_to_cart\", \"item\": \"Patiekalo pavadinimas\"}. "
+                "Jei klientas tiesiog klausia, atsakyk laisvu tekstu kaip padavėjas. "
+                "Galimi patiekalai yra:\n"
+                "Margarita, Cheeseburger, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
+                "Caesar salotos, Šokoladinis pyragas, Pankekai, Latte kava, Coca-Cola, Žalioji arbata.\n"
+                "Nefantazuok ir nesiūlyk kitų patiekalų."
+            )
+        },
+        {
+            "role": "user",
+            "content": req.message
+        }
+    ]
+)
+
 
         # Atskirti struktūrizuotą JSON (kai nori pridėti į krepšelį)
         content = response.choices[0].message.content.strip()
