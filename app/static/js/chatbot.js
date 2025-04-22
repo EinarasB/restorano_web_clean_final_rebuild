@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // 💡 Atsinaujina lokalų krepšelio vaizdą
         if (found) {
             const updated = JSON.parse(localStorage.getItem("cart")) || [];
             cart.length = 0;
@@ -69,13 +68,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
             const reply = data.reply;
-
             console.log("🧠 GPT atsakymas (data.reply):", reply);
 
-            // Jei jau yra objektas – konvertuojam į string (tik debugui)
             const rawText = typeof reply === "object" ? JSON.stringify(reply) : reply;
-
-            // Bandome ištraukti visus JSON objektus iš stringo
             const actions = [];
             const regex = /{[^{}]+}/g;
             const matches = rawText.match(regex);
@@ -90,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // Jei pavyko ištraukti veiksmus
             if (actions.length > 0) {
                 for (const act of actions) {
                     const qty = act.quantity || 1;
@@ -138,7 +132,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Jei ne JSON, rodom tekstą
             addMessage("Padavėjas AI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
@@ -146,8 +139,6 @@ document.addEventListener("DOMContentLoaded", function () {
             addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
-
-
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();
