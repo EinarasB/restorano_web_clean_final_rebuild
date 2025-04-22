@@ -67,13 +67,21 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            const reply = data.reply;
+            const reply = data?.reply;
+
             console.log("🧠 GPT atsakymas (data.reply):", reply);
 
-            const rawText = typeof reply === "object" ? JSON.stringify(reply) : reply;
+            // Jei nėra atsakymo – rodome klaidą ir grįžtam
+            if (!reply || typeof reply !== "string") {
+                addMessage("Padavėjas AI", "⚠️ Atsiprašau, atsakymas nesuprantamas.", false);
+                return;
+            }
+
+            // Ieškome JSON veiksmų
             const actions = [];
             const regex = /{[^{}]+}/g;
-            const matches = rawText.match(regex);
+            const matches = reply.match(regex);
+
             if (matches) {
                 for (const match of matches) {
                     try {
@@ -132,13 +140,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            addMessage("Padavėjas AI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
+            // Jei ne JSON – rodom tekstą
+            addMessage("Padavėjas AI", reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
             console.error("💥 Klaida:", e);
             addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
+
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();
