@@ -43,11 +43,17 @@
             console.log("🧠 GPT atsakymas (data.reply):", data.reply);
 
             let parsed = null;
-            try {
-                parsed = JSON.parse(data.reply);
-                console.log("📦 Parsuotas JSON:", parsed);
-            } catch {
-                console.warn("⚠️ Atsakymas nėra JSON, rodome tekstą.");
+
+            // 🧠 Jei jau objektas – naudok iškart
+            if (typeof data.reply === "object") {
+                parsed = data.reply;
+            } else {
+                try {
+                    parsed = JSON.parse(data.reply);
+                    console.log("📦 JSON parse pavyko:", parsed);
+                } catch {
+                    console.warn("⚠️ Nepavyko JSON.parse – rodome kaip tekstą");
+                }
             }
 
             if (parsed && parsed.action === "add_to_cart" && parsed.item) {
@@ -55,19 +61,21 @@
                 if (success) {
                     addMessage("Padavėjas AI", `✅ Patiekalas „${parsed.item}“ įdėtas į krepšelį.`, false);
                 } else {
-                    addMessage("Padavėjas AI", `⚠️ Nepavyko pridėti – neradau patiekalo pavadinimu „${parsed.item}“.`, false);
+                    addMessage("Padavėjas AI", `⚠️ Neradau patiekalo „${parsed.item}“.`, false);
                 }
                 return;
             }
 
-            // Ne JSON atsakymas
-            addMessage("Padavėjas AI", data.reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
+            // Jei nėra veiksmo – rodyk kaip tekstą
+            const replyText = typeof data.reply === "string" ? data.reply : JSON.stringify(data.reply);
+            addMessage("Padavėjas AI", replyText || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
             console.error("💥 Klaida:", e);
             addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida jungiantis prie serverio.", false);
         }
     };
+
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();
