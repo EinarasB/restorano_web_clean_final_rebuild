@@ -161,6 +161,36 @@ document.addEventListener("DOMContentLoaded", function () {
         chatWidget.classList.toggle("active");
     });
 
+    const micBtn = document.getElementById("mic-btn");
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'lt-LT';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript.trim();
+            chatInput.value = transcript;
+            sendBtn.click();
+        };
+
+        recognition.onerror = function (event) {
+            console.error("🎤 Kalbos atpažinimo klaida:", event.error);
+            addMessage("Sistema", "❌ Nepavyko suprasti balso. Bandyk dar kartą.", false);
+        };
+
+        micBtn.addEventListener("click", () => {
+            recognition.start();
+            addMessage("Sistema", "🎙️ Kalbėkite...", false);
+        });
+    } else {
+        micBtn.style.display = "none";
+        console.warn("🎤 Naršyklė nepalaiko kalbos atpažinimo");
+    }
+
+
     addMessage("Padavėjas AI", "Sveiki! Kuo galiu padėti šiandien? 😊");
 
     updateCartCount();
