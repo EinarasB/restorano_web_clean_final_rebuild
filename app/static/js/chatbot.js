@@ -1,13 +1,23 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿// === chatbot.js (AI su veiksmais) ===
+document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
     const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("send-btn");
 
-    toggleBtn.addEventListener("click", () => {
-        chatWidget.classList.toggle("active");
-    });
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const updateCartCount = () => {
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartCount = document.getElementById("cart-count");
+        if (cartCount) cartCount.textContent = total;
+    };
+
+    const saveCart = () => {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+    };
 
     const addMessage = (sender, text, isUser = false) => {
         const p = document.createElement("p");
@@ -16,19 +26,29 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
-    const simulateClick = (itemName) => {
+    const simulateAdd = (itemName, quantity = 1) => {
         const buttons = document.querySelectorAll(".add-to-cart");
-        let found = false;
-        buttons.forEach(btn => {
-            const btnName = btn.dataset.name?.toLowerCase();
-            const targetName = itemName.toLowerCase();
-            if (btnName === targetName) {
-                console.log("🔘 Paspaudžiam mygtuką:", btnName);
-                btn.click();
-                found = true;
-            }
-        });
-        return found;
+        for (let i = 0; i < quantity; i++) {
+            let found = false;
+            buttons.forEach(btn => {
+                if (btn.dataset.name.toLowerCase() === itemName.toLowerCase()) {
+                    btn.click();
+                    found = true;
+                }
+            });
+            if (!found) return false;
+        }
+        return true;
+    };
+
+    const removeFromCart = (itemName) => {
+        const index = cart.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
+        if (index !== -1) {
+            cart.splice(index, 1);
+            saveCart();
+            return true;
+        }
+        return false;
     };
 
     const askAI = async (question) => {
@@ -42,40 +62,60 @@
             const data = await response.json();
             console.log("🧠 GPT atsakymas (data.reply):", data.reply);
 
-            let parsed = null;
+            try {
+                const parsed = JSON.parse(data.reply);
 
-            // 🧠 Jei jau objektas – naudok iškart
-            if (typeof data.reply === "object") {
-                parsed = data.reply;
-            } else {
-                try {
-                    parsed = JSON.parse(data.reply);
-                    console.log("📦 JSON parse pavyko:", parsed);
-                } catch {
-                    console.warn("⚠️ Nepavyko JSON.parse – rodome kaip tekstą");
+                // Veiksmai
+                if (parsed.action === "add_to_cart") {
+                    const qty = parsed.quantity || 1;
+                    const success = simulateAdd(parsed.item, qty);
+                    if (success) addMessage("Sistema", `✅ Įdėta ${qty} x ${parsed.item}`, false);
+                    else addMessage("Sistema", `❌ Nepavyko pridėti „${parsed.item}"`, false);
                 }
-            }
 
-            if (parsed && parsed.action === "add_to_cart" && parsed.item) {
-                const success = simulateClick(parsed.item);
-                if (success) {
-                    addMessage("Padavėjas AI", `✅ Patiekalas „${parsed.item}“ įdėtas į krepšelį.`, false);
-                } else {
-                    addMessage("Padavėjas AI", `⚠️ Neradau patiekalo „${parsed.item}“.`, false);
+                else if (parsed.action === "remove_from_cart") {
+                    const success = removeFromCart(parsed.item);
+                    if (success) addMessage("Sistema", `🗑️ Pašalinta: ${parsed.item}`, false);
+                    else addMessage("Sistema", `⚠️ Neradau: ${parsed.item}`, false);
                 }
+
+                else if (parsed.action === "get_cart") {
+                    if (cart.length === 0) return addMessage("Sistema", "🛒 Krepšelis tuščias.", false);
+                    const list = cart.map(i => `- ${i.name} x ${i.quantity}`).join("<br>");
+                    addMessage("Krepšelis", list, false);
+                }
+
+                else if (parsed.action === "get_total") {
+                    const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                    addMessage("Sistema", `💰 Iš viso: €${total.toFixed(2)}`, false);
+                }
+
+                else if (parsed.action === "filter_price") {
+                    const max = parsed.max_price;
+                    const cheap = cart.filter(i => i.price <= max);
+                    if (cheap.length === 0) return addMessage("Sistema", `🔍 Nėra nieko iki €${max}`, false);
+                    const result = cheap.map(i => `${i.name} (€${i.price})`).join(", ");
+                    addMessage("Filtras", `Patiekalai iki €${max}: ${result}`, false);
+                }
+
+                else if (parsed.action === "daily_offer") {
+                    const suggestions = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
+                    addMessage("Dienos pasiūlymas", suggestions.join(" + "), false);
+                }
+
                 return;
+            } catch (err) {
+                console.log("⚠️ Nepavyko JSON.parse – rodome kaip tekstą");
             }
 
-            // Jei nėra veiksmo – rodyk kaip tekstą
-            const replyText = typeof data.reply === "string" ? data.reply : JSON.stringify(data.reply);
-            addMessage("Padavėjas AI", replyText || "🤖 Atsiprašau, negaliu atsakyti.", false);
+            // Ne JSON
+            addMessage("Padavėjas AI", data.reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
             console.error("💥 Klaida:", e);
-            addMessage("Padavėjas AI", "Atsiprašome, įvyko klaida jungiantis prie serverio.", false);
+            addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
-
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();

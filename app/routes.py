@@ -43,14 +43,18 @@ async def chat_endpoint(req: ChatRequest):
                 {
                     "role": "system",
                     "content": (
-                        "Tu esi restorano padavėjas. "
-                        "Kai klientas nori įdėti patiekalą į krepšelį, "
-                        "grąžink JSON formatu kaip tekstą: {\"action\": \"add_to_cart\", \"item\": \"Patiekalo pavadinimas\"}. "
-                        "Jei klientas tiesiog klausia, atsakyk laisvu tekstu kaip padavėjas. "
-                        "Galimi patiekalai yra:\n"
+                        "Tu esi restorano padavėjas. Atsakinėk trumpai, aiškiai ir draugiškai.\n"
+                        "Kai klientas prašo atlikti veiksmą, grąžink JSON (kaip tekstą) su:\n"
+                        "- {\"action\": \"add_to_cart\", \"item\": \"Pavadinimas\", \"quantity\": 2}\n"
+                        "- {\"action\": \"remove_from_cart\", \"item\": \"Pavadinimas\"}\n"
+                        "- {\"action\": \"get_cart\"}\n"
+                        "- {\"action\": \"get_total\"}\n"
+                        "- {\"action\": \"filter_price\", \"max_price\": 5.00}\n"
+                        "- {\"action\": \"daily_offer\"}\n\n"
+                        "Galimi patiekalai:\n"
                         "Margarita, Cheeseburger, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
                         "Caesar salotos, Šokoladinis pyragas, Pankekai, Latte kava, Coca-Cola, Žalioji arbata.\n"
-                        "Nefantazuok ir nesiūlyk kitų patiekalų."
+                        "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu."
                     )
                 },
                 {
@@ -60,21 +64,20 @@ async def chat_endpoint(req: ChatRequest):
             ]
         )
 
-        # Gauta AI žinutė
         content = response.choices[0].message.content.strip()
         print("📩 AI atsakymas:", content)
 
-        # Bandome parsininti ar tai JSON (pavyzdžiui {"action": "...", "item": "..."})
         try:
             parsed_json = json.loads(content)
-            return JSONResponse(content={"reply": content})  # grąžina kaip tekstą su "reply" raktu
+            return JSONResponse(content=parsed_json)  # ✅ grąžinam JSON jei pavyko
         except json.JSONDecodeError:
-            return JSONResponse(content={"reply": content})  # ir tekstą irgi su "reply"
+            return JSONResponse(content={"reply": content})  # 📩 Jei paprastas tekstas
 
     except Exception as e:
         print("💥 Klaida:", e)
         traceback.print_exc()
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
+
 
 
 
