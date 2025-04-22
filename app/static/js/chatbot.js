@@ -1,4 +1,4 @@
-﻿// === chatbot.js (AI su veiksmais - pataisyta versija) ===
+﻿// === chatbot.js (AI su veiksmais - stabili pataisyta versija) ===
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
@@ -67,27 +67,23 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await response.json();
-            const reply = data?.reply;
+            let reply = data.reply || data; // Jei nėra reply – naudojam visą data
 
             console.log("🧠 GPT atsakymas (data.reply):", reply);
 
-            // Jei nėra atsakymo – rodome klaidą ir grįžtam
-            if (!reply || typeof reply !== "string") {
-                addMessage("Padavėjas AI", "⚠️ Atsiprašau, atsakymas nesuprantamas.", false);
-                return;
-            }
+            // Jeigu reply yra objektas – konvertuojam į tekstą
+            const rawText = typeof reply === "object" ? JSON.stringify(reply) : reply;
 
-            // Ieškome JSON veiksmų
             const actions = [];
             const regex = /{[^{}]+}/g;
-            const matches = reply.match(regex);
+            const matches = rawText.match(regex);
 
             if (matches) {
                 for (const match of matches) {
                     try {
                         const obj = JSON.parse(match);
                         actions.push(obj);
-                    } catch (e) {
+                    } catch {
                         console.warn("❌ Nevalidus JSON blokas:", match);
                     }
                 }
@@ -140,8 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Jei ne JSON – rodom tekstą
-            addMessage("Padavėjas AI", reply || "🤖 Atsiprašau, negaliu atsakyti.", false);
+            addMessage("Padavėjas AI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
         } catch (e) {
             console.error("💥 Klaida:", e);
