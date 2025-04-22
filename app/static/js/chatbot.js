@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return found;
     };
 
-
     const removeFromCart = (itemName) => {
         const index = cart.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
         if (index !== -1) {
@@ -85,49 +84,42 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            if (parsed && parsed.action) {
-                const qty = parsed.quantity || 1;
+            if (parsed) {
+                const actions = Array.isArray(parsed) ? parsed : [parsed];
 
-                if (parsed.action === "add_to_cart") {
-                    const success = simulateAdd(parsed.item, qty);
-                    if (success) addMessage("Sistema", `✅ Įdėta ${qty} x ${parsed.item}`, false);
-                    else addMessage("Sistema", `❌ Nepavyko pridėti „${parsed.item}"`, false);
-                }
+                for (const act of actions) {
+                    const qty = act.quantity || 1;
 
-                else if (parsed.action === "remove_from_cart") {
-                    const success = removeFromCart(parsed.item);
-                    if (success) addMessage("Sistema", `🗑️ Pašalinta: ${parsed.item}`, false);
-                    else addMessage("Sistema", `⚠️ Neradau: ${parsed.item}`, false);
-                }
-
-                else if (parsed.action === "get_cart") {
-                    if (cart.length === 0) return addMessage("Sistema", "🛒 Krepšelis tuščias.", false);
-                    const list = cart.map(i => `- ${i.name} x ${i.quantity}`).join("<br>");
-                    addMessage("Krepšelis", list, false);
-                }
-
-                else if (parsed.action === "get_total") {
-                    const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-                    addMessage("Sistema", `💰 Iš viso: €${total.toFixed(2)}`, false);
-                }
-
-                else if (parsed.action === "filter_price") {
-                    const max = parsed.max_price;
-                    const cheap = cart.filter(i => i.price <= max);
-                    if (cheap.length === 0) return addMessage("Sistema", `🔍 Nėra nieko iki €${max}`, false);
-                    const result = cheap.map(i => `${i.name} (€${i.price})`).join(", ");
-                    addMessage("Filtras", `Patiekalai iki €${max}: ${result}`, false);
-                }
-
-                else if (parsed.action === "daily_offer") {
-                    const suggestions = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
-                    addMessage("Dienos pasiūlymas", suggestions.join(" + "), false);
+                    if (act.action === "add_to_cart") {
+                        const success = simulateAdd(act.item, qty);
+                        if (success) addMessage("Sistema", `✅ Įdėta ${qty} x ${act.item}`, false);
+                        else addMessage("Sistema", `❌ Nepavyko pridėti „${act.item}"`, false);
+                    } else if (act.action === "remove_from_cart") {
+                        const success = removeFromCart(act.item);
+                        if (success) addMessage("Sistema", `🗑️ Pašalinta: ${act.item}`, false);
+                        else addMessage("Sistema", `⚠️ Neradau: ${act.item}`, false);
+                    } else if (act.action === "get_cart") {
+                        if (cart.length === 0) return addMessage("Sistema", "🛒 Krepšelis tuščias.", false);
+                        const list = cart.map(i => `- ${i.name} x ${i.quantity}`).join("<br>");
+                        addMessage("Krepšelis", list, false);
+                    } else if (act.action === "get_total") {
+                        const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                        addMessage("Sistema", `💰 Iš viso: €${total.toFixed(2)}`, false);
+                    } else if (act.action === "filter_price") {
+                        const max = act.max_price;
+                        const cheap = cart.filter(i => i.price <= max);
+                        if (cheap.length === 0) return addMessage("Sistema", `🔍 Nėra nieko iki €${max}`, false);
+                        const result = cheap.map(i => `${i.name} (€${i.price})`).join(", ");
+                        addMessage("Filtras", `Patiekalai iki €${max}: ${result}`, false);
+                    } else if (act.action === "daily_offer") {
+                        const suggestions = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
+                        addMessage("Dienos pasiūlymas", suggestions.join(" + "), false);
+                    }
                 }
 
                 return;
             }
 
-            // Jei ne action ir ne reply – laikom tekstu
             const fallback = typeof data.reply === "string" ? data.reply : JSON.stringify(data);
             addMessage("Padavėjas AI", fallback || "🤖 Atsiprašau, negaliu atsakyti.", false);
 
@@ -136,8 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
             addMessage("Padavėjas AI", "⚠️ Įvyko klaida jungiantis prie serverio.", false);
         }
     };
-
-
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();
