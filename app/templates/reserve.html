@@ -1,5 +1,4 @@
-﻿<!-- reserve.html atnaujinta su rezervuotais staliukais ir animacija -->
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
@@ -11,16 +10,18 @@
     <div class="container">
         <h1>Staliukų rezervacija</h1>
         <p>Sveiki, {{ username }}! Pasirinkite norimą staliuką:</p>
-        <div class="map-container">
-            <img src="/static/images/map.jpg" alt="Restorano žemėlapis" class="floor-map">
-        </div>
 
         <form method="post" action="/reserve" id="reservation-form">
-            <div class="table-map">
-                {% for i in range(1, 11) %}
-                <button type="button" class="table-btn {% if 'T' ~ i in reserved_tables %}reserved{% endif %}"
-                        data-table="T{{ i }}" {% if 'T' ~ i in reserved_tables %}disabled{% endif %}>
-                    🪑 T{{ i }}
+            <div class="map-container">
+                <img src="/static/images/map.jpg" alt="Restorano žemėlapis" class="floor-map">
+
+                {% for i in range(1, 13) %}
+                <button type="button"
+                        class="table-btn {% if 'T' ~ i in reserved_tables %}reserved{% endif %}"
+                        data-table="T{{ i }}"
+                        {% if 'T' ~ i in reserved_tables %}disabled{% endif %}
+                        style="top: {{ table_positions[i]['top'] }}px; left: {{ table_positions[i]['left'] }}px;">
+                    {{ i }}
                 </button>
                 {% endfor %}
             </div>

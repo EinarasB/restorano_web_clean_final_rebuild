@@ -634,36 +634,37 @@ button.reserved {
     position: relative;
     width: 100%;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 30px auto;
 }
 
 .floor-map {
     width: 100%;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .table-btn {
     position: absolute;
-    padding: 8px 12px;
     background-color: #22c55e;
     color: white;
     border: none;
     border-radius: 50%;
+    font-size: 14px;
     font-weight: bold;
+    width: 38px;
+    height: 38px;
     cursor: pointer;
-    transition: 0.3s ease;
-    z-index: 10;
+    transition: background-color 0.2s;
 }
 
     .table-btn:hover {
-        background-color: #15803d;
+        background-color: #16a34a;
     }
 
     .table-btn.reserved {
-        background-color: #d1d5db;
+        background-color: #ef4444;
         cursor: not-allowed;
     }
+
 
 
 

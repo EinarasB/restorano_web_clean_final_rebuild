@@ -4,11 +4,10 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
-from app.models import SessionLocal, User, Order, OrderItem
+from app.models import SessionLocal, User, Order, OrderItem, Reservation
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
-from app.models import Reservation
 import os
 import json
 import traceback
@@ -16,16 +15,13 @@ import traceback
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY", "").replace("\n", "").strip()
 
-# 💡 Saugumo dėlei tikrina ar raktas įkeltas
 if not openai_api_key:
     raise ValueError("❌ Nepavyko gauti OpenAI API rakto!")
 
-print("🔐 API KEY:", openai_api_key[:8] + "..." + openai_api_key[-4:])  # Trumpesnis debug
+print("🔐 API KEY:", openai_api_key[:8] + "..." + openai_api_key[-4:])
 
 client = OpenAI(api_key=openai_api_key)
 
-
-# ✅ ČIA VIENAS router
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
@@ -37,7 +33,6 @@ class ChatRequest(BaseModel):
 async def chat_endpoint(req: ChatRequest):
     try:
         print("🧠 Gauta žinutė:", req.message)
-
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -64,23 +59,19 @@ async def chat_endpoint(req: ChatRequest):
                 }
             ]
         )
-
         content = response.choices[0].message.content.strip()
         print("📩 AI atsakymas:", content)
 
         try:
             parsed_json = json.loads(content)
-            return JSONResponse(content=parsed_json)  # ✅ grąžinam JSON jei pavyko
+            return JSONResponse(content=parsed_json)
         except json.JSONDecodeError:
-            return JSONResponse(content={"reply": content})  # 📩 Jei paprastas tekstas
+            return JSONResponse(content={"reply": content})
 
     except Exception as e:
         print("💥 Klaida:", e)
         traceback.print_exc()
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
-
-
-
 
 # ======== REGISTRACIJA ==========
 @router.get("/register")
@@ -88,12 +79,7 @@ def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 @router.post("/register")
-def register_user(
-    request: Request,
-    username: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...)
-):
+def register_user(request: Request, username: str = Form(...), email: str = Form(...), password: str = Form(...)):
     db = SessionLocal()
     user = User(username=username, email=email, password=password)
     try:
@@ -111,21 +97,22 @@ def register_user(
     finally:
         db.close()
 
-# ======== PRISIJUNGIMAS ==========
+# ======== AUTH ==========
+@router.get("/logout")
+def logout():
+    response = RedirectResponse(url="/guest", status_code=302)
+    response.delete_cookie("username")
+    return response
+
 @router.get("/login")
 def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
-def login_user(
-    request: Request,
-    username: str = Form(...),
-    password: str = Form(...)
-):
+def login_user(request: Request, username: str = Form(...), password: str = Form(...)):
     db: Session = SessionLocal()
     user = db.query(User).filter(User.username == username, User.password == password).first()
     db.close()
-
     if user:
         response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
         response.set_cookie(key="username", value=username)
@@ -134,18 +121,13 @@ def login_user(
         error = "Neteisingas vartotojo vardas arba slaptažodis."
         return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
-
 # ======== ADMIN ==========
 @router.get("/admin")
 def admin_login_form(request: Request):
     return templates.TemplateResponse("admin_login.html", {"request": request})
 
 @router.post("/admin")
-def admin_login(
-    request: Request,
-    username: str = Form(...),
-    password: str = Form(...)
-):
+def admin_login(request: Request, username: str = Form(...), password: str = Form(...)):
     if username == "admin" and password == "admin123":
         db = SessionLocal()
         users = db.query(User).all()
@@ -155,7 +137,15 @@ def admin_login(
         error = "Neteisingas vartotojo vardas arba slaptažodis."
         return templates.TemplateResponse("admin_login.html", {"request": request, "error": error})
 
-# ======== MENIU ==========
+@router.post("/admin/reset-reservations")
+def reset_reservations():
+    db = SessionLocal()
+    db.query(Reservation).delete()
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin", status_code=302)
+
+# ======== MENU / GUEST ==========
 @router.get("/guest")
 def guest_menu(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
@@ -170,11 +160,7 @@ def checkout_page(request: Request):
     return templates.TemplateResponse("checkout.html", {"request": request})
 
 @router.post("/checkout")
-def submit_order(
-    request: Request,
-    payment_method: str = Form(...),
-    order_data: str = Form(...)
-):
+def submit_order(request: Request, payment_method: str = Form(...), order_data: str = Form(...)):
     db = SessionLocal()
     try:
         order = Order(payment_method=payment_method)
@@ -200,7 +186,7 @@ def submit_order(
     finally:
         db.close()
 
-#rezervacija
+# ======== REZERVACIJA ==========
 @router.get("/reserve")
 def reserve_page(request: Request):
     username = request.cookies.get("username")
@@ -212,13 +198,27 @@ def reserve_page(request: Request):
     db.close()
     reserved_tables = [r.table_id for r in reservations]
 
+    table_positions = {
+        1: {"top": 60, "left": 80},
+        2: {"top": 60, "left": 320},
+        3: {"top": 160, "left": 200},
+        4: {"top": 60, "left": 500},
+        5: {"top": 260, "left": 200},
+        6: {"top": 260, "left": 500},
+        7: {"top": 400, "left": 80},
+        8: {"top": 180, "left": 60},
+        9: {"top": 400, "left": 300},
+        10: {"top": 500, "left": 450},
+        11: {"top": 180, "left": 420},
+        12: {"top": 420, "left": 560}
+    }
+
     return templates.TemplateResponse("reserve.html", {
         "request": request,
         "username": username,
-        "reserved_tables": reserved_tables
+        "reserved_tables": reserved_tables,
+        "table_positions": table_positions
     })
-
-
 
 @router.post("/reserve")
 def submit_reservation(request: Request, table_id: str = Form(...)):
@@ -227,17 +227,15 @@ def submit_reservation(request: Request, table_id: str = Form(...)):
         return RedirectResponse("/login", status_code=302)
 
     db = SessionLocal()
+
+    # Patikrinam ar jau rezervuota
+    existing = db.query(Reservation).filter(Reservation.table_id == table_id).first()
+    if existing:
+        db.close()
+        return RedirectResponse("/reserve", status_code=302)
+
     reservation = Reservation(username=username, table_id=table_id)
     db.add(reservation)
     db.commit()
     db.close()
     return RedirectResponse("/menu", status_code=302)
-
-@router.post("/admin/reset-reservations")
-def reset_reservations():
-    db = SessionLocal()
-    db.query(Reservation).delete()
-    db.commit()
-    db.close()
-    return RedirectResponse("/admin", status_code=302)
-
