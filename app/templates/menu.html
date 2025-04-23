@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restorano AI Meniu</title>
     <link rel="stylesheet" href="/static/css/style.css">
@@ -16,6 +15,12 @@
         </a>
 
         <h1>Restorano AI Meniu</h1>
+        {% if request.cookies.get("username") %}
+        <div class="button-group">
+            <a href="/reserve" class="btn">📅 Rezervuoti staliuką</a>
+        </div>
+        {% endif %}
+
 
         <!-- Kategorijų navigacija -->
         <div class="category-nav">

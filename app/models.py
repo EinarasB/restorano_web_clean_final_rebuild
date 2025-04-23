@@ -1,6 +1,7 @@
-﻿from sqlalchemy import Column, Integer, String, ForeignKey, Float, create_engine
+﻿from sqlalchemy import Column, Integer, String, ForeignKey, Float, create_engine, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from datetime import datetime
 import os
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -34,3 +35,10 @@ class OrderItem(Base):
     image = Column(String)
 
     order = relationship("Order", back_populates="items")
+
+class Reservation(Base):
+    __tablename__ = "reservations"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, nullable=False)
+    table_id = Column(String, nullable=False)
+    reserved_at = Column(DateTime, default=datetime.utcnow)

@@ -8,6 +8,7 @@ from app.models import SessionLocal, User, Order, OrderItem
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
+from app.models import Reservation
 import os
 import json
 import traceback
@@ -195,3 +196,25 @@ def submit_order(
         return templates.TemplateResponse("checkout.html", {"request": request, "error": f"Klaida: {e}"})
     finally:
         db.close()
+
+#rezervacija
+@router.get("/reserve")
+def reserve_page(request: Request):
+    username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse("/login", status_code=302)
+    return templates.TemplateResponse("reserve.html", {"request": request, "username": username})
+
+
+@router.post("/reserve")
+def submit_reservation(request: Request, table_id: str = Form(...)):
+    username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse("/login", status_code=302)
+
+    db = SessionLocal()
+    reservation = Reservation(username=username, table_id=table_id)
+    db.add(reservation)
+    db.commit()
+    db.close()
+    return RedirectResponse("/menu", status_code=302)

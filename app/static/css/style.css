@@ -537,6 +537,26 @@ button {
     }
 }
 
-/* 🖥️ Dideliems ekranams – paliekam kaip yra */
+.table-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 30px 0;
+}
+
+    .table-map button {
+        padding: 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 2px solid #888;
+        background-color: #f2f2f2;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .table-map button:hover {
+            background-color: #d2eaff;
+        }
+
 
 

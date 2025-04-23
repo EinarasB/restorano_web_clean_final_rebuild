@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Staliukų rezervacija</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>Staliukų rezervacija</h1>
+    <p>Sveiki, {{ username }}! Pasirinkite norimą staliuką:</p>
+
+    <form method="post" action="/reserve">
+        <div class="table-map">
+            {% for i in range(1, 11) %}
+            <button type="submit" name="table_id" value="T{{ i }}">🪑 Staliukas {{ i }}</button>
+            {% endfor %}
+        </div>
+    </form>
+
+    <a href="/menu" class="btn">🔙 Grįžti į meniu</a>
+</body>
+</html>
