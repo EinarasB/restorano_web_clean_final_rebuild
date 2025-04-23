@@ -657,10 +657,10 @@ button.reserved {
     transform: translate(-50%, -50%);
 }
 
-    .table-btn.reserved {
-        background-color: #dc2626; /* raudona */
-        cursor: not-allowed;
-    }
+.table-btn.reserved {
+    background-color: #dc2626; /* raudona */
+    cursor: not-allowed;
+}
 
 
 
