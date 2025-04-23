@@ -127,10 +127,13 @@ def login_user(
     db.close()
 
     if user:
-        return RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+        response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+        response.set_cookie(key="username", value=username)
+        return response
     else:
         error = "Neteisingas vartotojo vardas arba slaptažodis."
         return templates.TemplateResponse("login.html", {"request": request, "error": error})
+
 
 # ======== ADMIN ==========
 @router.get("/admin")
