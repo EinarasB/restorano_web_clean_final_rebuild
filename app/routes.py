@@ -124,18 +124,24 @@ def login_user(request: Request, username: str = Form(...), password: str = Form
 # ======== ADMIN ==========
 @router.get("/admin")
 def admin_login_form(request: Request):
-    return templates.TemplateResponse("admin_login.html", {"request": request})
+    db = SessionLocal()
+    users = db.query(User).all()
+    reservations = db.query(Reservation).order_by(Reservation.reserved_at.desc()).all()
+    db.close()
+    return templates.TemplateResponse("admin_panel.html", {
+        "request": request,
+        "users": users,
+        "reservations": reservations
+    })
 
-@router.post("/admin")
-def admin_login(request: Request, username: str = Form(...), password: str = Form(...)):
-    if username == "admin" and password == "admin123":
-        db = SessionLocal()
-        users = db.query(User).all()
-        db.close()
-        return templates.TemplateResponse("admin_panel.html", {"request": request, "users": users})
-    else:
-        error = "Neteisingas vartotojo vardas arba slaptažodis."
-        return templates.TemplateResponse("admin_login.html", {"request": request, "error": error})
+@router.post("/admin/delete-reservation")
+def delete_reservation(reservation_id: int = Form(...)):
+    db = SessionLocal()
+    db.query(Reservation).filter(Reservation.id == reservation_id).delete()
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin", status_code=302)
+
 
 @router.post("/admin/reset-reservations")
 def reset_reservations():

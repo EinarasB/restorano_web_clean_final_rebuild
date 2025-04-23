@@ -1,16 +1,14 @@
-﻿<!DOCTYPE html>
+﻿<!-- Papildyta admin_panel.html -->
+<!DOCTYPE html>
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Admin panelė</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="container">
-        <h2 style="margin-bottom: 20px;">Vartotojų sąrašas</h2>
-
+        <h2>Vartotojų sąrašas</h2>
         {% if users|length == 0 %}
         <p>Nėra užsiregistravusių vartotojų.</p>
         {% else %}
@@ -33,10 +31,39 @@
             </tbody>
         </table>
         {% endif %}
-    </div>
-    <form method="post" action="/admin/reset-reservations" style="margin-top: 20px;">
-        <button class="btn">❌ Atšaukti visas rezervacijas</button>
-    </form>
 
+        <hr style="margin: 40px 0;">
+
+        <h2>Rezervacijos</h2>
+        {% if reservations|length == 0 %}
+        <p>Nėra rezervacijų.</p>
+        {% else %}
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Naudotojas</th>
+                    <th>Staliukas</th>
+                    <th>Data</th>
+                    <th>Veiksmas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservations %}
+                <tr>
+                    <td>{{ r.username }}</td>
+                    <td>{{ r.table_id }}</td>
+                    <td>{{ r.reserved_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>
+                        <form method="post" action="/admin/delete-reservation">
+                            <input type="hidden" name="reservation_id" value="{{ r.id }}">
+                            <button class="btn admin-btn" type="submit">Atšaukti</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
 </body>
 </html>
