@@ -20,9 +20,10 @@
                         class="table-btn {% if 'T' ~ i in reserved_tables %}reserved{% endif %}"
                         data-table="T{{ i }}"
                         {% if 'T' ~ i in reserved_tables %}disabled{% endif %}
-                        style="top: {{ table_positions[i]['top'] }}px; left: {{ table_positions[i]['left'] }}px;">
+                        style="top: {{ table_positions[i]['top'] }}; left: {{ table_positions[i]['left'] }};">
                     {{ i }}
                 </button>
+
                 {% endfor %}
             </div>
             <input type="hidden" name="table_id" id="selected-table" />

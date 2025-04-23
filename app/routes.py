@@ -199,19 +199,20 @@ def reserve_page(request: Request):
     reserved_tables = [r.table_id for r in reservations]
 
     table_positions = {
-        1: {"top": 27, "left": 287},
-        2: {"top": 145, "left": 287},
-        3: {"top": 245, "left": 287},
-        4: {"top": 346, "left": 287},
-        5: {"top": 45, "left": 66},
-        6: {"top": 45, "left": 175},
-        7: {"top": 185, "left": 66},
-        8: {"top": 325, "left": 66},
-        9: {"top": 453, "left": 59},
-        10: {"top": 493, "left": 170},
-        11: {"top": 181, "left": 411},
-        12: {"top": 291, "left": 410}
-    }
+    1:  {"top": "11%", "left": "20%"},
+    2:  {"top": "11%", "left": "48%"},
+    3:  {"top": "12%", "left": "78%"},
+    4:  {"top": "28%", "left": "20%"},
+    5:  {"top": "28%", "left": "48%"},
+    6:  {"top": "29%", "left": "78%"},
+    7:  {"top": "45%", "left": "20%"},
+    8:  {"top": "45%", "left": "48%"},
+    9:  {"top": "47%", "left": "78%"},
+    10: {"top": "62%", "left": "20%"},
+    11: {"top": "62%", "left": "48%"},
+    12: {"top": "78%", "left": "78%"}
+}
+
 
     return templates.TemplateResponse("reserve.html", {
         "request": request,

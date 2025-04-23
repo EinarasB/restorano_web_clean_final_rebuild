@@ -632,6 +632,8 @@ button.reserved {
 }
 .map-container {
     position: relative;
+    display: inline-block;
+    max-width: 100%;
 }
 
 .floor-map {
@@ -642,25 +644,21 @@ button.reserved {
 
 .table-btn {
     position: absolute;
-    padding: 10px;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
+    border: none;
     background-color: #2563eb;
     color: white;
     font-weight: bold;
-    border: none;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    text-align: center;
-    line-height: 20px;
-    font-size: 14px;
-    transform: translate(-50%, -50%);
+    z-index: 2;
 }
 
-.table-btn.reserved {
-    background-color: #dc2626; /* raudona */
-    cursor: not-allowed;
-}
+    .table-btn.reserved {
+        background-color: #ef4444;
+    }
 
 
 
