@@ -199,18 +199,18 @@ def reserve_page(request: Request):
     reserved_tables = [r.table_id for r in reservations]
 
     table_positions = {
-        1: {"top": 60, "left": 80},
-        2: {"top": 60, "left": 320},
-        3: {"top": 160, "left": 200},
-        4: {"top": 60, "left": 500},
-        5: {"top": 260, "left": 200},
-        6: {"top": 260, "left": 500},
-        7: {"top": 400, "left": 80},
-        8: {"top": 180, "left": 60},
-        9: {"top": 400, "left": 300},
-        10: {"top": 500, "left": 450},
-        11: {"top": 180, "left": 420},
-        12: {"top": 420, "left": 560}
+        1: {"top": 27, "left": 287},
+        2: {"top": 145, "left": 287},
+        3: {"top": 245, "left": 287},
+        4: {"top": 346, "left": 287},
+        5: {"top": 45, "left": 66},
+        6: {"top": 45, "left": 175},
+        7: {"top": 185, "left": 66},
+        8: {"top": 325, "left": 66},
+        9: {"top": 453, "left": 59},
+        10: {"top": 493, "left": 170},
+        11: {"top": 181, "left": 411},
+        12: {"top": 291, "left": 410}
     }
 
     return templates.TemplateResponse("reserve.html", {
