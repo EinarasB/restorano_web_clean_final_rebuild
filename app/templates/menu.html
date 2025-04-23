@@ -9,13 +9,17 @@
     <script src="/static/js/script.js" defer></script>
 </head>
 <body>
-    {% if request.cookies.get("username") %}
-    <a href="/logout" class="logout-btn">Atsijungti</a>
-    {% endif %}
-    <div class="menu-wrapper">
+    <div class="top-buttons">
+        {% if request.cookies.get("username") %}
+        <a href="/logout" class="logout-btn">🚪 Atsijungti</a>
+        {% endif %}
         <a href="/checkout" class="cart">
             🛒 Krepšelis: <span id="cart-count">0</span>
         </a>
+    </div>
+
+    <div class="menu-wrapper">
+
         {% if request.cookies.get("username") and request.cookies.get("username") != 'guest' %}
         <div class="reservation-box">
             <a href="/reserve" class="btn">📅 Rezervuoti staliuką</a>
