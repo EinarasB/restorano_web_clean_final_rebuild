@@ -659,50 +659,18 @@ button.reserved {
     .table-btn.reserved {
         background-color: #ef4444;
     }
-.logout-btn {
-    position: fixed;
-    top: 20px;
-    right: 180px;
-    font-size: 16px;
-    font-weight: bold;
-    background-color: #ef4444;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    text-decoration: none;
-    transition: background 0.3s ease;
-}
-
-    .logout-btn:hover {
-        background-color: #b91c1c;
-    }
 .top-buttons {
     position: fixed;
     top: 20px;
     right: 40px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     z-index: 1000;
 }
 
-.logout-btn {
-    font-size: 16px;
-    font-weight: bold;
-    background-color: #ef4444;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 20px;
-    text-decoration: none;
-    transition: background 0.3s ease;
-}
-
-    .logout-btn:hover {
-        background-color: #b91c1c;
+    .top-buttons .logout-btn,
+    .top-buttons .cart {
+        position: static;
+        margin: 0;
     }
-
-
-
-
 
