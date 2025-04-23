@@ -13,13 +13,11 @@
         <a href="/checkout" class="cart">
             🛒 Krepšelis: <span id="cart-count">0</span>
         </a>
-        {% if request.cookies.get("username") %}
-        <div class="button-group">
+        {% if request.cookies.get("username") and request.cookies.get("username") != 'guest' %}
+        <div class="reservation-box">
             <a href="/reserve" class="btn">📅 Rezervuoti staliuką</a>
+            <p class="welcome-text">Prisijungęs kaip: <strong>{{ request.cookies.get("username") }}</strong></p>
         </div>
-        {% endif %}
-        {% if request.cookies.get("username") %}
-        <p class="welcome-text">Prisijungęs kaip: <strong>{{ request.cookies.get("username") }}</strong></p>
         {% endif %}
 
 

@@ -206,7 +206,18 @@ def reserve_page(request: Request):
     username = request.cookies.get("username")
     if not username:
         return RedirectResponse("/login", status_code=302)
-    return templates.TemplateResponse("reserve.html", {"request": request, "username": username})
+
+    db = SessionLocal()
+    reservations = db.query(Reservation).all()
+    db.close()
+    reserved_tables = [r.table_id for r in reservations]
+
+    return templates.TemplateResponse("reserve.html", {
+        "request": request,
+        "username": username,
+        "reserved_tables": reserved_tables
+    })
+
 
 
 @router.post("/reserve")
@@ -221,3 +232,12 @@ def submit_reservation(request: Request, table_id: str = Form(...)):
     db.commit()
     db.close()
     return RedirectResponse("/menu", status_code=302)
+
+@router.post("/admin/reset-reservations")
+def reset_reservations():
+    db = SessionLocal()
+    db.query(Reservation).delete()
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin", status_code=302)
+
