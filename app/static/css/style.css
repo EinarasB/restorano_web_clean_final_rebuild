@@ -632,38 +632,36 @@ button.reserved {
 }
 .map-container {
     position: relative;
-    width: 100%;
-    max-width: 900px;
-    margin: 30px auto;
 }
 
 .floor-map {
     width: 100%;
-    border-radius: 12px;
+    height: auto;
+    display: block;
 }
 
 .table-btn {
     position: absolute;
-    background-color: #22c55e;
-    color: white;
-    border: none;
+    padding: 10px;
     border-radius: 50%;
-    font-size: 14px;
+    background-color: #2563eb;
+    color: white;
     font-weight: bold;
-    width: 38px;
-    height: 38px;
+    border: none;
     cursor: pointer;
-    transition: background-color 0.2s;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
+    transform: translate(-50%, -50%);
 }
 
-    .table-btn:hover {
-        background-color: #16a34a;
-    }
-
     .table-btn.reserved {
-        background-color: #ef4444;
+        background-color: #dc2626; /* raudona */
         cursor: not-allowed;
     }
+
 
 
 
