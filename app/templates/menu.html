@@ -13,13 +13,17 @@
         <a href="/checkout" class="cart">
             🛒 Krepšelis: <span id="cart-count">0</span>
         </a>
-
-        <h1>Restorano AI Meniu</h1>
         {% if request.cookies.get("username") %}
         <div class="button-group">
             <a href="/reserve" class="btn">📅 Rezervuoti staliuką</a>
         </div>
         {% endif %}
+        {% if request.cookies.get("username") %}
+        <p class="welcome-text">Prisijungęs kaip: <strong>{{ request.cookies.get("username") }}</strong></p>
+        {% endif %}
+
+
+        <h1>Restorano AI Meniu</h1>
 
 
         <!-- Kategorijų navigacija -->
