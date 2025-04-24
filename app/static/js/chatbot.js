@@ -129,9 +129,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 return;
             }
-            if (rawText.toLowerCase().includes("ar norėtumėte pridėti juos į krepšelį")) {
+            if (actions.length > 0) {
+                // ... jau esamas veiksmų apdorojimas ...
+                return;
+            }
+
+            // ✅ Jei AI klausimas apie pasiūlymo pridėjimą – saugom veiksmą
+            if (typeof rawText === "string" && rawText.toLowerCase().includes("ar norėtumėte pridėti juos į krepšelį")) {
                 pendingAction = "daily_offer";
             }
+
+            addMessage("Padavėjas DI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
+
 
 
             addMessage("Padavėjas DI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
