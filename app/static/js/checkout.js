@@ -88,15 +88,15 @@
 // === REKOMENDACIJŲ SISTEMA ===
 const allDishes = [
     { name: "Kava", price: 2.49, image: "kava.jpg" },
-    { name: "Šokoladinis pyragas", price: 5.49, image: "desertas.jpg" },
-    { name: "Caesar salotos", price: 6.49, image: "salotos.jpg" },
+    { name: "Spurga su šokoladu", price: 5.49, image: "desertas.jpg" },
+    { name: "Cezario salotos", price: 6.49, image: "salotos.jpg" },
     { name: "Makaronai su vištiena", price: 9.49, image: "pasta.jpg" },
-    { name: "Pankekai", price: 4.99, image: "pankekai.jpg" },
+    { name: "Blyneliai", price: 4.99, image: "pankekai.jpg" },
     { name: "Jautienos kepsnys", price: 13.99, image: "kepsnys.jpg" },
     { name: "Latte kava", price: 2.49, image: "kava.jpg" },
     { name: "Vištienos sriuba", price: 4.99, image: "sriuba.jpg" },
     { name: "Margarita", price: 7.99, image: "pica.jpg" },
-    { name: "Cheeseburger", price: 8.49, image: "burger.jpg" },
+    { name: "Burgeris", price: 8.49, image: "burger.jpg" },
 ];
 
 function generateRecommendations() {

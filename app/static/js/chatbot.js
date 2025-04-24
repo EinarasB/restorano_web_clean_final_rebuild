@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    addMessage("Padavėjas AI", "Sveiki! Kuo galiu padėti šiandien? 😊");
+    addMessage("Padavėjas DI", "Sveiki! Kuo galiu padėti šiandien? 😊");
 
     updateCartCount();
 });
