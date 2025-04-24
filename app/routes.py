@@ -48,8 +48,8 @@ async def chat_endpoint(req: ChatRequest):
                         "- {\"action\": \"filter_price\", \"max_price\": 5.00}\n"
                         "- {\"action\": \"daily_offer\"}\n\n"
                         "Galimi patiekalai:\n"
-                        "Margarita, Cheeseburger, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
-                        "Caesar salotos, Šokoladinis pyragas, Pankekai, Latte kava, Coca-Cola, Žalioji arbata.\n"
+                        "Margarita, Burgeris, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
+                        "Cezario salotos, Spurga su šokoladu, Blyneliai, Latte kava, Coca-Cola, Žalioji arbata.\n"
                         "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu."
                     )
                 },
