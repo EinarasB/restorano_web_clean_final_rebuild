@@ -128,16 +128,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     else if (act.action === "daily_offer") {
-                        // ♥ Naujas patvirtinimo langas
-                        const confirm = window.confirm("😉 Ar tikrai norite pridėti dienos pasiūlymą?");
-                        if (confirm) {
-                            const offerItems = ["Margarita", "Latte kava", "Spurga su šokoladu"];
-                            offerItems.forEach(name => simulateAdd(name));
-                            addMessage("Dienos pasiūlymas", `✅ ĮDĖTA: ${offerItems.join(", ")}`, false);
-                        } else {
-                            addMessage("Sistema", "🚫 Pasiūlymas atmestas.", false);
-                        }
+                        const offerItems = ["Margarita", "Latte kava", "Spurga su šokoladu"];
+                        offerItems.forEach(name => simulateAdd(name));
+                        addMessage("Dienos pasiūlymas", `✅ ĮDĖTA: ${offerItems.join(", ")}`, false);
                     }
+
                 }
                 return;
             }

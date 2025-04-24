@@ -50,7 +50,9 @@ async def chat_endpoint(req: ChatRequest):
                         "Galimi patiekalai:\n"
                         "Margarita, Burgeris, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
                         "Cezario salotos, Spurga su šokoladu, Blyneliai, Latte kava, Coca-Cola, Žalioji arbata.\n"
-                        "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu."
+                        "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
+                        "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., 'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: 'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
+
                     )
                 },
                 {
