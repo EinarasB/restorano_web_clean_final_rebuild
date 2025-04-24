@@ -129,6 +129,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 return;
             }
+            if (rawText.toLowerCase().includes("ar norėtumėte pridėti juos į krepšelį")) {
+                pendingAction = "daily_offer";
+            }
+
 
             addMessage("Padavėjas DI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
         } catch (e) {
