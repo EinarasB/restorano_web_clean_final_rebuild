@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     else if (act.action === "daily_offer") {
-                        const offerItems = ["Margarita", "Latte kava", "Šokoladinis pyragas"];
+                        const offerItems = ["Margarita", "Latte kava", "Spurga su šokoladu"];
                         offerItems.forEach(name => simulateAdd(name));
                         addMessage("Dienos pasiūlymas", `✅ Įdėti: ${offerItems.join(", ")}`, false);
                     }
