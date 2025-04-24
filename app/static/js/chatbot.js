@@ -1,4 +1,6 @@
 ﻿// === chatbot.js (AI su veiksmais - stabili pataisyta versija) ===
+let pendingAction = null;
+
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
@@ -71,8 +73,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
             let reply = data.reply || data;
-
             const rawText = typeof reply === "object" ? JSON.stringify(reply) : reply;
+
+            if (rawText.toLowerCase().includes("ar norėtumėte pridėti") && rawText.toLowerCase().includes("margaritą")) {
+                pendingAction = "daily_offer";
+            }
 
             const actions = [];
             const regex = /{[^{}]+}/g;
@@ -97,51 +102,38 @@ document.addEventListener("DOMContentLoaded", function () {
                         const success = simulateAdd(act.item, qty);
                         if (success) addMessage("Sistema", `✅ ĮDĖTA ${qty} x ${act.item}`, false);
                         else addMessage("Sistema", `❌ Nepavyko pridėti: ${act.item}`, false);
-                    }
-
-                    else if (act.action === "remove_from_cart") {
+                    } else if (act.action === "remove_from_cart") {
                         const success = removeFromCart(act.item);
                         if (success) addMessage("Sistema", `🗑️ Pašalinta: ${act.item}`, false);
                         else addMessage("Sistema", `⚠️ Nerasta: ${act.item}`, false);
-                    }
-
-                    else if (act.action === "get_cart") {
+                    } else if (act.action === "get_cart") {
                         if (cart.length === 0) {
                             addMessage("Sistema", "🛒 Krepšelis tuščias.", false);
                         } else {
                             const list = cart.map(i => `- ${i.name} x ${i.quantity}`).join("<br>");
                             addMessage("Krepšelis", list, false);
                         }
-                    }
-
-                    else if (act.action === "get_total") {
+                    } else if (act.action === "get_total") {
                         const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
                         addMessage("Sistema", `💰 Iš viso: €${total.toFixed(2)}`, false);
-                    }
-
-                    else if (act.action === "filter_price") {
+                    } else if (act.action === "filter_price") {
                         const max = act.max_price;
                         const cheap = cart.filter(i => i.price <= max);
                         if (cheap.length === 0) return addMessage("Sistema", `🔍 Nėra nieko iki €${max}`, false);
                         const result = cheap.map(i => `${i.name} (€${i.price})`).join(", ");
                         addMessage("Filtras", `Patiekalai iki €${max}: ${result}`, false);
+                    } else if (act.action === "daily_offer") {
+                        pendingAction = "daily_offer";
+                        addMessage("Sistema", "📦 Siūlome dienos meniu. Atsakykite TAIP, jei norite įdėti į krepšelį.", false);
                     }
-
-                    else if (act.action === "daily_offer") {
-                        const offerItems = ["Margarita", "Latte kava", "Spurga su šokoladu"];
-                        offerItems.forEach(name => simulateAdd(name));
-                        addMessage("Dienos pasiūlymas", `✅ ĮDĖTA: ${offerItems.join(", ")}`, false);
-                    }
-
                 }
                 return;
             }
 
-            addMessage("Padavėjas AI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
-
+            addMessage("Padavėjas DI", rawText || "🤖 Atsiprašau, negaliu atsakyti.", false);
         } catch (e) {
             console.error("💥 Klaida:", e);
-            addMessage("Padavėjas AI", "⚠️ Klaida jungiantis prie serverio.", false);
+            addMessage("Padavėjas DI", "⚠️ Klaida jungiantis prie serverio.", false);
         }
     };
 
