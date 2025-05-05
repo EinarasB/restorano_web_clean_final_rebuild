@@ -706,3 +706,13 @@ button.reserved {
         background-color: #b91c1c;
     }
 
+#secret-admin-link {
+    position: absolute;
+    bottom: 30px; /* Paslinkimas nuo apačios – reguliuok pagal daržovės vietą */
+    left: 120px; /* Horizontalus paslinkimas – reguliuok pagal vaizdą */
+    width: 80px; /* Plotis aktyvaus ploto */
+    height: 80px; /* Aukštis aktyvaus ploto */
+    z-index: 10;
+    background: transparent;
+    cursor: pointer;
+}
