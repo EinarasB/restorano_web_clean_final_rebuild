@@ -130,7 +130,7 @@ def admin_login_form(request: Request):
     users = db.query(User).all()
     reservations = db.query(Reservation).order_by(Reservation.reserved_at.desc()).all()
     db.close()
-    return templates.TemplateResponse("admin_panel.html", {
+    return templates.TemplateResponse("admin_login.html", {
         "request": request,
         "users": users,
         "reservations": reservations
