@@ -124,17 +124,47 @@ def login_user(request: Request, username: str = Form(...), password: str = Form
         return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
 # ======== ADMIN ==========
-@router.get("/admin")
-def admin_login_form(request: Request):
+@router.get("/admin-login")
+def show_admin_login(request: Request):
+    return templates.TemplateResponse("admin_login.html", {"request": request})
+
+# 2. Tikrina vartotojo vardą ir slaptažodį
+@router.post("/admin")
+def admin_login(request: Request, username: str = Form(...), password: str = Form(...)):
+    correct_username = os.getenv("ADMIN_USER", "admin")
+    correct_password = os.getenv("ADMIN_PASSWORD", "slaptas123")
+
+    if username == correct_username and password == correct_password:
+        response = RedirectResponse(url="/admin-panel", status_code=302)
+        response.set_cookie(key="admin_auth", value="true")
+        return response
+    else:
+        error = "❌ Neteisingas vartotojo vardas arba slaptažodis."
+        return templates.TemplateResponse("admin_login.html", {"request": request, "error": error})
+
+# 3. Admin panelė, pasiekiama tik prisijungus
+@router.get("/admin-panel")
+def show_admin_panel(request: Request):
+    if request.cookies.get("admin_auth") != "true":
+        return RedirectResponse("/admin-login", status_code=302)
+
     db = SessionLocal()
     users = db.query(User).all()
     reservations = db.query(Reservation).order_by(Reservation.reserved_at.desc()).all()
     db.close()
-    return templates.TemplateResponse("admin_login.html", {
+
+    return templates.TemplateResponse("admin_panel.html", {
         "request": request,
         "users": users,
         "reservations": reservations
     })
+
+# 4. Atsijungimas (jei reikia)
+@router.get("/admin-logout")
+def admin_logout():
+    response = RedirectResponse("/admin-login", status_code=302)
+    response.delete_cookie("admin_auth")
+    return response
 
 @router.post("/admin/delete-reservation")
 def delete_reservation(reservation_id: int = Form(...)):
