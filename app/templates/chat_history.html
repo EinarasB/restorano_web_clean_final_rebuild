@@ -7,13 +7,18 @@
 </head>
 <body>
     <div class="container">
-        <h2>Pokalbio istorija vartotojui: {{ username }}</h2>
-        <div class="chat-log">
-            {% for msg in history %}
-            <p><strong>{{ msg.role }}:</strong> {{ msg.content }}</p>
+        <h1>🕛 Pokalbio istorija</h1>
+        <p>Rodyti pokalbius pagal datą:</p>
+        <ul>
+            {% for date in history_dates %}
+            <li>
+                <strong>{{ date }}</strong>
+                <a href="/chat-history/{{ date }}" class="btn small-btn">📂 Peržiūrėti</a>
+            </li>
             {% endfor %}
-        </div>
-        <a href="/menu" class="btn">🔙 Grįžti</a>
+        </ul>
+
+        <a href="/menu" class="btn">🔙 Grįžti į meniu</a>
     </div>
 </body>
 </html>

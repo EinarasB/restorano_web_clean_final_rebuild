@@ -13,6 +13,8 @@ import os
 import json
 import traceback
 from datetime import datetime
+from sqlalchemy import func
+from fastapi import Path
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY", "").replace("\n", "").strip()
@@ -314,17 +316,38 @@ def submit_reservation(request: Request, table_id: str = Form(...)):
     return RedirectResponse("/menu", status_code=302)
 
 @router.get("/chat-history")
-def chat_history(request: Request):
+def chat_history_dates(request: Request):
     username = request.cookies.get("username")
     if not username:
         return RedirectResponse("/login", status_code=302)
 
     db = SessionLocal()
-    history = db.query(ChatMessage).filter(ChatMessage.username == username).order_by(ChatMessage.timestamp).all()
+    # Išrenkame unikalių datų sąrašą
+    dates = db.query(func.date(ChatMessage.timestamp)).filter(ChatMessage.username == username).distinct().all()
     db.close()
 
-    return templates.TemplateResponse("chat_history.html", {
+    date_list = [str(date[0]) for date in dates]  # Konvertuojame į string sąrašą
+
+    return templates.TemplateResponse("chat_history_dates.html", {
         "request": request,
-        "history": history,
-        "username": username
+        "dates": date_list
+    })
+
+@router.get("/chat-history/{date}")
+def chat_history_by_date(request: Request, date: str = Path(...)):
+    username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse("/login", status_code=302)
+
+    db = SessionLocal()
+    messages = db.query(ChatMessage).filter(
+        ChatMessage.username == username,
+        func.date(ChatMessage.timestamp) == date
+    ).order_by(ChatMessage.timestamp).all()
+    db.close()
+
+    return templates.TemplateResponse("chat_history_by_date.html", {
+        "request": request,
+        "messages": messages,
+        "selected_date": date
     })
