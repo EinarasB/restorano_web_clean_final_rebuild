@@ -39,15 +39,9 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         ip = request.client.host
         db = SessionLocal()
 
-        # Istorijos surinkimas
-        if username:
-            history = db.query(ChatMessage).filter(ChatMessage.username == username).order_by(ChatMessage.timestamp).all()
-            messages = [{"role": h.role, "content": h.content} for h in history[-10:]]
-        else:
-            messages = session_memory[ip][-10:]
-
-        if not messages:
-            messages.append({"role": "system", "content": (
+        system_prompt = {
+            "role": "system",
+            "content": (
                 "Tu esi restorano padavėjas. Atsakinėk trumpai, aiškiai ir draugiškai.\n"
                 "Kai klientas prašo atlikti veiksmą, grąžink JSON (kaip tekstą) su:\n"
                 "- {\"action\": \"add_to_cart\", \"item\": \"Pavadinimas\", \"quantity\": 2}\n"
@@ -56,17 +50,35 @@ async def chat_endpoint(req: ChatRequest, request: Request):
                 "- {\"action\": \"get_total\"}\n"
                 "- {\"action\": \"filter_price\", \"max_price\": 5.00}\n"
                 "- {\"action\": \"daily_offer\"}\n\n"
-                "Galimi patiekalai: Margarita, Burgeris, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, Cezario salotos, Spurga su šokoladu, Blyneliai, Latte kava, Coca-Cola, Žalioji arbata.\n"
+                "Galimi patiekalai: Margarita, Burgeris, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
+                "Cezario salotos, Spurga su šokoladu, Blyneliai, Latte kava, Coca-Cola, Žalioji arbata.\n"
                 "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
-                        "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., 'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: 'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
+                "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., "
+                "'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: "
+                "'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
+            )
+        }
 
-            )})
+        # Pokalbio istorija
+        messages = [system_prompt]
+        if username:
+            history = db.query(ChatMessage).filter(ChatMessage.username == username).order_by(ChatMessage.timestamp).all()
+            messages += [{"role": m.role, "content": m.content} for m in history[-10:]]
+        else:
+            messages += session_memory[ip][-10:]
 
+        # Nauja žinutė
         messages.append({"role": "user", "content": req.message})
-        response = client.chat.completions.create(model="gpt-4o", messages=messages)
+
+        # DI užklausa
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages
+        )
         content = response.choices[0].message.content.strip()
         print("📩 AI atsakymas:", content)
 
+        # Išsaugojimas
         if username:
             db.add(ChatMessage(username=username, role="user", content=req.message))
             db.add(ChatMessage(username=username, role="assistant", content=content))
