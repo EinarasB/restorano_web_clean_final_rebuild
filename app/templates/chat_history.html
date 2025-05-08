@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Pokalbio istorija</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Pokalbio istorija vartotojui: {{ username }}</h2>
+        <div class="chat-log">
+            {% for msg in history %}
+            <p><strong>{{ msg.role }}:</strong> {{ msg.content }}</p>
+            {% endfor %}
+        </div>
+        <a href="/menu" class="btn">🔙 Grįžti</a>
+    </div>
+</body>
+</html>

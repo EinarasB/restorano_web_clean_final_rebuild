@@ -312,3 +312,19 @@ def submit_reservation(request: Request, table_id: str = Form(...)):
     db.commit()
     db.close()
     return RedirectResponse("/menu", status_code=302)
+
+@router.get("/chat-history")
+def chat_history(request: Request):
+    username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse("/login", status_code=302)
+
+    db = SessionLocal()
+    history = db.query(ChatMessage).filter(ChatMessage.username == username).order_by(ChatMessage.timestamp).all()
+    db.close()
+
+    return templates.TemplateResponse("chat_history.html", {
+        "request": request,
+        "history": history,
+        "username": username
+    })

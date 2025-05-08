@@ -22,8 +22,10 @@
 
         {% if request.cookies.get("username") and request.cookies.get("username") != 'guest' %}
         <div class="reservation-box">
+            <p class="welcome-text" style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">
+                Prisijungęs kaip: <strong>{{ request.cookies.get("username") }}</strong>
+            </p>
             <a href="/reserve" class="btn">📅 Rezervuoti staliuką</a>
-            <p class="welcome-text">Prisijungęs kaip: <strong>{{ request.cookies.get("username") }}</strong></p>
             <a href="/chat-history" class="btn chat-history-btn">🕛 Pokalbio istorija</a>
         </div>
         {% endif %}
