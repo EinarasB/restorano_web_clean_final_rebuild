@@ -7,13 +7,13 @@
     // Žemėlapis tarp item pavadinimų ir paveikslėlių
     const imageMap = {
         "Margarita": "pica.jpg",
-        "Cheeseburger": "burger.jpg",
+        "Burgeris": "burger.jpg",
         "Vištienos sriuba": "sriuba.jpg",
         "Makaronai su vištiena": "pasta.jpg",
-        "Caesar salotos": "salotos.jpg",
+        "Cezario salotos": "salotos.jpg",
         "Jautienos kepsnys": "kepsnys.jpg",
-        "Šokoladinis pyragas": "desertas.jpg",
-        "Pankekai": "pankekai.jpg",
+        "Spurga su šokoladu": "desertas.jpg",
+        "Blyneliai": "pankekai.jpg",
         "Latte kava": "kava.jpg"
     };
 
