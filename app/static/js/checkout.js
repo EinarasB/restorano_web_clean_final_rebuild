@@ -14,7 +14,9 @@
         "Jautienos kepsnys": "kepsnys.jpg",
         "Spurga su šokoladu": "desertas.jpg",
         "Blyneliai": "pankekai.jpg",
-        "Latte kava": "kava.jpg"
+        "Latte kava": "kava.jpg",
+        "Coca-Cola": "cola.jpg",
+        "Žalioji arbata": "arbata.jpg"
     };
 
     const renderCart = () => {
@@ -97,6 +99,8 @@ const allDishes = [
     { name: "Vištienos sriuba", price: 4.99, image: "sriuba.jpg" },
     { name: "Margarita", price: 7.99, image: "pica.jpg" },
     { name: "Burgeris", price: 8.49, image: "burger.jpg" },
+    { name: "Cola-Cola", price: 1.99, image: "cola.jpg" },
+    { name: "Žalioji arbata", price: 1.49, image: "arbata.jpg"},
 ];
 
 function generateRecommendations() {
