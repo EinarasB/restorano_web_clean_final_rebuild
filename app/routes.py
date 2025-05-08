@@ -8,9 +8,11 @@ from app.models import SessionLocal, User, Order, OrderItem, Reservation
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
+from collections import defaultdict
 import os
 import json
 import traceback
+from datetime import datetime
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY", "").replace("\n", "").strip()
@@ -30,43 +32,50 @@ class ChatRequest(BaseModel):
     message: str
 
 @router.post("/chat")
-async def chat_endpoint(req: ChatRequest):
+async def chat_endpoint(req: ChatRequest, request: Request):
     try:
-        print("🧠 Gauta žinutė:", req.message)
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Tu esi restorano padavėjas. Atsakinėk trumpai, aiškiai ir draugiškai.\n"
-                        "Kai klientas prašo atlikti veiksmą, grąžink JSON (kaip tekstą) su:\n"
-                        "- {\"action\": \"add_to_cart\", \"item\": \"Pavadinimas\", \"quantity\": 2}\n"
-                        "- {\"action\": \"remove_from_cart\", \"item\": \"Pavadinimas\"}\n"
-                        "- {\"action\": \"get_cart\"}\n"
-                        "- {\"action\": \"get_total\"}\n"
-                        "- {\"action\": \"filter_price\", \"max_price\": 5.00}\n"
-                        "- {\"action\": \"daily_offer\"}\n\n"
-                        "Galimi patiekalai:\n"
-                        "Margarita, Burgeris, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, "
-                        "Cezario salotos, Spurga su šokoladu, Blyneliai, Latte kava, Coca-Cola, Žalioji arbata.\n"
-                        "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
+        username = request.cookies.get("username")
+        ip = request.client.host
+        db = SessionLocal()
+
+        # Istorijos surinkimas
+        if username:
+            history = db.query(ChatMessage).filter(ChatMessage.username == username).order_by(ChatMessage.timestamp).all()
+            messages = [{"role": h.role, "content": h.content} for h in history[-10:]]
+        else:
+            messages = session_memory[ip][-10:]
+
+        if not messages:
+            messages.append({"role": "system", "content": (
+                "Tu esi restorano padavėjas. Atsakinėk trumpai, aiškiai ir draugiškai.\n"
+                "Kai klientas prašo atlikti veiksmą, grąžink JSON (kaip tekstą) su:\n"
+                "- {\"action\": \"add_to_cart\", \"item\": \"Pavadinimas\", \"quantity\": 2}\n"
+                "- {\"action\": \"remove_from_cart\", \"item\": \"Pavadinimas\"}\n"
+                "- {\"action\": \"get_cart\"}\n"
+                "- {\"action\": \"get_total\"}\n"
+                "- {\"action\": \"filter_price\", \"max_price\": 5.00}\n"
+                "- {\"action\": \"daily_offer\"}\n\n"
+                "Galimi patiekalai: Margarita, Burgeris, Vištienos sriuba, Makaronai su vištiena, Jautienos kepsnys, Cezario salotos, Spurga su šokoladu, Blyneliai, Latte kava, Coca-Cola, Žalioji arbata.\n"
+                "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
                         "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., 'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: 'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
 
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": req.message
-                }
-            ]
-        )
+            )})
+
+        messages.append({"role": "user", "content": req.message})
+        response = client.chat.completions.create(model="gpt-4o", messages=messages)
         content = response.choices[0].message.content.strip()
         print("📩 AI atsakymas:", content)
 
+        if username:
+            db.add(ChatMessage(username=username, role="user", content=req.message))
+            db.add(ChatMessage(username=username, role="assistant", content=content))
+            db.commit()
+        else:
+            session_memory[ip].append({"role": "user", "content": req.message})
+            session_memory[ip].append({"role": "assistant", "content": content})
+
         try:
-            parsed_json = json.loads(content)
-            return JSONResponse(content=parsed_json)
+            return JSONResponse(content=json.loads(content))
         except json.JSONDecodeError:
             return JSONResponse(content={"reply": content})
 
@@ -74,6 +83,8 @@ async def chat_endpoint(req: ChatRequest):
         print("💥 Klaida:", e)
         traceback.print_exc()
         return JSONResponse(content={"reply": f"Klaida: {str(e)}"})
+    finally:
+        db.close()
 
 # ======== REGISTRACIJA ==========
 @router.get("/register")

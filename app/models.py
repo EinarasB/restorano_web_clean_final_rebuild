@@ -45,3 +45,13 @@ class Reservation(Base):
     username = Column(String, nullable=False)
     table_id = Column(String, nullable=False)
     reserved_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, nullable=True)
+    role = Column(String)
+    content = Column(Text)
+    timestamp = Column(DateTime, default=datetime.utcnow)
