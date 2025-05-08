@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Pokalbio istorija – {{ date }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .chat-box {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+        }
+
+        .user {
+            background-color: #e0f7fa;
+            text-align: right;
+        }
+
+        .assistant {
+            background-color: #fff8e1;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container chat-box">
+        <h1>📅 Pokalbis {{ date }}</h1>
+
+        {% for msg in messages %}
+        <div class="message {{ msg.role }}">
+            <strong>{{ msg.role.capitalize() }}:</strong> {{ msg.content }}
+        </div>
+        {% endfor %}
+
+        <div style="margin-top: 20px;">
+            <a href="/chat-history" class="btn">🔙 Grįžti į dienų sąrašą</a>
+        </div>
+    </div>
+</body>
+</html>
