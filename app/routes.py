@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
-from app.models import SessionLocal, User, Order, OrderItem, Reservation
+from app.models import SessionLocal, User, Order, OrderItem, Reservation, ChatMessage
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -26,6 +26,7 @@ client = OpenAI(api_key=openai_api_key)
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+session_memory = defaultdict(list)
 
 # ======== AI CHAT ==========
 class ChatRequest(BaseModel):
