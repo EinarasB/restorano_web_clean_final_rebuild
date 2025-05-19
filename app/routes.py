@@ -129,24 +129,24 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
 
         # El. pašto siuntimas po sėkmingos registracijos
         try:
-    msg = EmailMessage()
-    msg['Subject'] = 'Registracija sėkminga'
-    msg['From'] = os.getenv("MAIL_FROM")
-    msg['To'] = email
-    msg.set_content(
-        f"Sveiki, {username}!\n\nDėkojame, kad užsiregistravote. Linkime malonaus naudojimosi mūsų sistema!"
-    )
+            msg = EmailMessage()
+            msg['Subject'] = 'Registracija sėkminga'
+            msg['From'] = os.getenv("MAIL_FROM")
+            msg['To'] = email
+            msg.set_content(
+                f"Sveiki, {username}!\n\nDėkojame, kad užsiregistravote. Linkime malonaus naudojimosi mūsų sistema!"
+            )
 
-    # Naudojam SMTP_SSL jei jungiamės per 465 portą
-    smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
-    smtp_port = int(os.getenv("MAIL_PORT", 465))
+            # Naudojam SMTP_SSL jei jungiamės per 465 portą
+            smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+            smtp_port = int(os.getenv("MAIL_PORT", 465))
 
-    with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
-        smtp.login(os.getenv("MAIL_FROM"), os.getenv("MAIL_PASSWORD"))
-        smtp.send_message(msg)
+            with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+                smtp.login(os.getenv("MAIL_FROM"), os.getenv("MAIL_PASSWORD"))
+                smtp.send_message(msg)
 
-except Exception as e:
-    print("❌ Nepavyko išsiųsti el. laiško:", e)
+        except Exception as e:
+            print("❌ Nepavyko išsiųsti el. laiško:", e)
 
         return RedirectResponse("/menu", status_code=HTTP_302_FOUND)
 
@@ -154,14 +154,13 @@ except Exception as e:
         db.rollback()
         error = "Toks vartotojas arba el. paštas jau egzistuoja."
         return templates.TemplateResponse("register.html", {"request": request, "error": error})
-
     except Exception as e:
         db.rollback()
         error = f"Įvyko klaida: {e}"
         return templates.TemplateResponse("register.html", {"request": request, "error": error})
-
     finally:
         db.close()
+
 
 
 # ======== AUTH ==========
