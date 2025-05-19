@@ -11,7 +11,7 @@
         <h1>🧾 Užsakymų istorija</h1>
         <p>Rodyti žetakymus pagal datą:</p>
         <ul>
-            {% for date in order_dates %}
+            {% for date in history_dates %}
             <li>
                 <strong>{{ date }}</strong>
                 <a href="/order-history/{{ date }}" class="btn small-btn">📂 Peržiūrėti</a>

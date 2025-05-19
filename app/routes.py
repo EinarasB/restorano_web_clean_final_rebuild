@@ -346,7 +346,9 @@ def checkout_page(request: Request):
 def submit_order(request: Request, payment_method: str = Form(...), order_data: str = Form(...)):
     db = SessionLocal()
     try:
-        order = Order(payment_method=payment_method)
+        username = request.cookies.get("username") or "guest"
+
+        order = Order(payment_method=payment_method, username=username)
         db.add(order)
         db.commit()
         db.refresh(order)
