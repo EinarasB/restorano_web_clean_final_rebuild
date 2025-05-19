@@ -197,4 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addMessage("Padavėjas DI", "Sveiki! Kuo galiu padėti šiandien? 😊");
 
     updateCartCount();
+
+    chatWidget.classList.add("active"); // 👈 automatiškai atidaro pokalbių langą
+
 });
