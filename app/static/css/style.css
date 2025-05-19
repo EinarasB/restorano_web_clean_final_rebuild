@@ -722,3 +722,24 @@ button.reserved {
     font-weight: bold;
     margin-bottom: 10px;
 }
+.right-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Naujasis „Pradžia“ mygtukas */
+.home-btn {
+    background-color: #2ecc71; /* Žalia */
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+    .home-btn:hover {
+        background-color: #27ae60;
+    }
+
+
