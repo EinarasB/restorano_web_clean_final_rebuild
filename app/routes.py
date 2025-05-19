@@ -134,10 +134,14 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
             msg['From'] = os.getenv("MAIL_FROM")
             msg['To'] = email
             msg.set_content(
-                f"Sveiki, {username}!\n\nDėkojame, kad prisijungėte prie RestoranasAI.lt\n\nJūsų paskyra sėkmingai sukurta – nuo šiol galite lengvai rezervuoti staliukus, peržiūrėti meniu ir bendrauti su mūsų DI padavėju.\nJei turite klausimų ar pasiūlymų, rašykite mums į el. paštą: restoranasdi@gmail.com\nSkanaus ir malonaus naudojimosi sistema!\n\nEinaras Bargaila\nhttps://www.restoranasai.lt"
+                f"Sveiki, {username}!\n\nDėkojame, kad prisijungėte prie RestoranasAI.lt\n\n"
+                "Jūsų paskyra sėkmingai sukurta – nuo šiol galite lengvai rezervuoti staliukus, "
+                "peržiūrėti meniu ir bendrauti su mūsų DI padavėju.\n"
+                "Jei turite klausimų ar pasiūlymų, rašykite mums į el. paštą: restoranasdi@gmail.com\n"
+                "Skanaus ir malonaus naudojimosi sistema!\n\n"
+                "Einaras Bargaila\nhttps://www.restoranasai.lt"
             )
 
-            # Naudojam SMTP_SSL jei jungiamės per 465 portą
             smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
             smtp_port = int(os.getenv("MAIL_PORT", 465))
 
@@ -148,21 +152,24 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
         except Exception as e:
             print("❌ Nepavyko išsiųsti el. laiško:", e)
 
-    response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
-    response.set_cookie(key="username", value=username)
-    return response
-
+        # ✅ Šita dalis turi būti įtraukta į pagrindinį try bloką!
+        response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+        response.set_cookie(key="username", value=username)
+        return response
 
     except IntegrityError:
         db.rollback()
         error = "Toks vartotojas arba el. paštas jau egzistuoja."
         return templates.TemplateResponse("register.html", {"request": request, "error": error})
+
     except Exception as e:
         db.rollback()
         error = f"Įvyko klaida: {e}"
         return templates.TemplateResponse("register.html", {"request": request, "error": error})
+
     finally:
         db.close()
+
 
 
 
