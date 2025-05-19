@@ -129,20 +129,24 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
 
         # El. pašto siuntimas po sėkmingos registracijos
         try:
-            msg = EmailMessage()
-            msg['Subject'] = 'Registracija sėkminga'
-            msg['From'] = os.getenv("MAIL_FROM")
-            msg['To'] = email
-            msg.set_content(
-                f"Sveiki, {username}!\n\nDėkojame, kad užsiregistravote. Linkime malonaus naudojimosi mūsų sistema!"
-            )
+    msg = EmailMessage()
+    msg['Subject'] = 'Registracija sėkminga'
+    msg['From'] = os.getenv("MAIL_FROM")
+    msg['To'] = email
+    msg.set_content(
+        f"Sveiki, {username}!\n\nDėkojame, kad užsiregistravote. Linkime malonaus naudojimosi mūsų sistema!"
+    )
 
-            with smtplib.SMTP_SSL(os.getenv("MAIL_SERVER"), 465) as smtp:
-                smtp.login(os.getenv("MAIL_FROM"), os.getenv("MAIL_PASSWORD"))
-                smtp.send_message(msg)
+    # Naudojam SMTP_SSL jei jungiamės per 465 portą
+    smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.getenv("MAIL_PORT", 465))
 
-        except Exception as e:
-            print("❌ Nepavyko išsiųsti el. laiško:", e)
+    with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+        smtp.login(os.getenv("MAIL_FROM"), os.getenv("MAIL_PASSWORD"))
+        smtp.send_message(msg)
+
+except Exception as e:
+    print("❌ Nepavyko išsiųsti el. laiško:", e)
 
         return RedirectResponse("/menu", status_code=HTTP_302_FOUND)
 
