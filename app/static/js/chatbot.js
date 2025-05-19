@@ -1,30 +1,35 @@
 ﻿let pendingAction = null;
 
 const speak = (text) => {
-    if ('speechSynthesis' in window) {
-        const msg = new SpeechSynthesisUtterance(text);
-        msg.lang = 'lt-LT';
+    if (!('speechSynthesis' in window)) return;
 
-        const loadVoices = () => {
-            const voices = speechSynthesis.getVoices();
-            if (!voices.length) {
-                setTimeout(loadVoices, 100);
-                return;
-            }
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'lt-LT';
 
-            const preferredVoice = voices.find(v =>
-                v.lang === 'lt-LT' &&
-                (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft'))
-            ) || voices.find(v => v.lang === 'lt-LT');
+    const waitForVoices = () => {
+        return new Promise((resolve) => {
+            let voices = speechSynthesis.getVoices();
+            if (voices.length) return resolve(voices);
 
-            if (preferredVoice) msg.voice = preferredVoice;
+            speechSynthesis.onvoiceschanged = () => {
+                voices = speechSynthesis.getVoices();
+                resolve(voices);
+            };
+        });
+    };
 
-            speechSynthesis.speak(msg);
-        };
+    waitForVoices().then((voices) => {
+        const preferred = voices.find(v =>
+            v.lang === 'lt-LT' &&
+            (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft'))
+        ) || voices.find(v => v.lang === 'lt-LT');
 
-        loadVoices();
-    }
+        if (preferred) msg.voice = preferred;
+
+        speechSynthesis.speak(msg);
+    });
 };
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
