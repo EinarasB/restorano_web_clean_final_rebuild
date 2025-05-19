@@ -28,6 +28,16 @@
             color: #333;
         }
 
+        a.link-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -71,10 +81,6 @@
             margin-top: 20px;
         }
 
-        .search-box {
-            margin: 20px 0;
-        }
-
         .stats {
             background: #eef3f8;
             padding: 15px;
@@ -87,21 +93,19 @@
     <div class="container">
         <h1>Administratoriaus Panelė</h1>
 
+        <a href="/admin/edit-menu" class="link-btn">🍽️ Tvarkyti meniu</a>
+
         <div class="stats">
             <strong>Statistika:</strong><br>
             Viso vartotojų: {{ users|length }}<br>
             Viso rezervacijų: {{ reservations|length }}
         </div>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Ieškoti pagal vartotojo vardą..." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
-
         <h2>Vartotojai</h2>
         {% if users|length == 0 %}
         <p>Nėra vartotojų.</p>
         {% else %}
-        <table id="usersTable">
+        <table>
             <thead>
                 <tr>
                     <th>#</th>
@@ -163,9 +167,12 @@
                     <td>{{ r.table_id }}</td>
                     <td>{{ r.reserved_at.strftime("%Y-%m-%d %H:%M") }}</td>
                     <td>
-                        <form method="post" action="/admin/delete-reservation">
+                        <form method="post" action="/admin/delete-reservation" style="display:inline;">
                             <input type="hidden" name="reservation_id" value="{{ r.id }}">
                             <button class="btn danger" type="submit">Atšaukti</button>
+                        </form>
+                        <form method="get" action="/admin/edit-reservation/{{ r.id }}" style="display:inline;">
+                            <button class="btn" type="submit">Redaguoti</button>
                         </form>
                     </td>
                 </tr>
@@ -179,22 +186,5 @@
         </div>
         {% endif %}
     </div>
-
-    <script>
-        // Paieška pagal vartotojo vardą
-        const searchInput = document.getElementById("searchInput");
-        const usersTable = document.getElementById("usersTable").getElementsByTagName("tbody")[0];
-
-        searchInput.addEventListener("keyup", function () {
-            const filter = searchInput.value.toLowerCase();
-            const rows = usersTable.getElementsByTagName("tr");
-
-            for (let i = 0; i < rows.length; i++) {
-                const nameCell = rows[i].getElementsByTagName("td")[1];
-                const name = nameCell.textContent || nameCell.innerText;
-                rows[i].style.display = name.toLowerCase().includes(filter) ? "" : "none";
-            }
-        });
-    </script>
 </body>
 </html>

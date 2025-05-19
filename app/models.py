@@ -55,3 +55,11 @@ class ChatMessage(Base):
     role = Column(String)
     content = Column(Text)
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+class MenuItem(Base):
+    __tablename__ = "menu_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
+    description = Column(Text)

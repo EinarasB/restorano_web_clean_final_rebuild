@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Redaguoti vartotoją</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 6px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .btn:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Redaguoti vartotoją</h2>
+        <form method="post" action="/admin/update-user">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+
+            <label for="username">Vartotojo vardas</label>
+            <input type="text" name="username" id="username" value="{{ user.username }}" required>
+
+            <label for="email">El. paštas</label>
+            <input type="email" name="email" id="email" value="{{ user.email }}" required>
+
+            <button class="btn" type="submit">Išsaugoti pakeitimus</button>
+        </form>
+    </div>
+</body>
+</html>

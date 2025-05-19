@@ -288,6 +288,25 @@ def reset_reservations():
     db.close()
     return RedirectResponse("/admin", status_code=302)
 
+@router.get("/admin/edit-user")
+def edit_user_form(request: Request, user_id: int = Form(...)):
+    db: Session = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    db.close()
+    if not user:
+        return RedirectResponse("/admin-panel", status_code=302)
+    return templates.TemplateResponse("edit_user.html", {"request": request, "user": user})
+
+@router.post("/admin/update-user")
+def update_user(request: Request, user_id: int = Form(...), username: str = Form(...), email: str = Form(...)):
+    db: Session = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        user.username = username
+        user.email = email
+        db.commit()
+    db.close()
+    return RedirectResponse("/admin-panel", status_code=302)
 
 # ======== MENU / GUEST ==========
 @router.get("/guest")
@@ -421,3 +440,50 @@ def chat_history_by_date(request: Request, date: str = Path(...)):
         "messages": messages,
         "selected_date": date
     })
+
+# Meniu redagavimas ir pridėjimas
+@router.get("/admin/edit-menu")
+def show_menu_items(request: Request):
+    db: Session = SessionLocal()
+    items = db.query(MenuItem).all()
+    db.close()
+    return templates.TemplateResponse("edit_menu.html", {"request": request, "items": items})
+
+@router.post("/admin/add-menu-item")
+def add_menu_item(name: str = Form(...), price: float = Form(...), description: str = Form(...)):
+    db: Session = SessionLocal()
+    new_item = MenuItem(name=name, price=price, description=description)
+    db.add(new_item)
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin/edit-menu", status_code=302)
+
+@router.post("/admin/update-menu-item")
+def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: float = Form(...), description: str = Form(...)):
+    db: Session = SessionLocal()
+    item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
+    if item:
+        item.name = name
+        item.price = price
+        item.description = description
+        db.commit()
+    db.close()
+    return RedirectResponse("/admin/edit-menu", status_code=302)
+
+# Rezervacijų redagavimas
+@router.get("/admin/edit-reservation/{reservation_id}")
+def edit_reservation_form(request: Request, reservation_id: int = Path(...)):
+    db: Session = SessionLocal()
+    reservation = db.query(Reservation).filter(Reservation.id == reservation_id).first()
+    db.close()
+    return templates.TemplateResponse("edit_reservation.html", {"request": request, "reservation": reservation})
+
+@router.post("/admin/update-reservation")
+def update_reservation(reservation_id: int = Form(...), date_time: str = Form(...)):
+    db: Session = SessionLocal()
+    reservation = db.query(Reservation).filter(Reservation.id == reservation_id).first()
+    if reservation:
+        reservation.reserved_at = date_time
+        db.commit()
+    db.close()
+    return RedirectResponse("/admin-panel", status_code=302)
