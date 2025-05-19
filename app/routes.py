@@ -148,7 +148,10 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
         except Exception as e:
             print("❌ Nepavyko išsiųsti el. laiško:", e)
 
-        return RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+        response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+response.set_cookie(key="username", value=username)
+return response
+
 
     except IntegrityError:
         db.rollback()
@@ -215,6 +218,12 @@ def show_admin_panel(request: Request):
     db = SessionLocal()
     users = db.query(User).all()
     reservations = db.query(Reservation).order_by(Reservation.reserved_at.desc()).all()
+
+    # Pridedame rezervacijų skaičių kiekvienam vartotojui
+    for user in users:
+        count = db.query(Reservation).filter(Reservation.username == user.username).count()
+        user.reservation_count = count
+
     db.close()
 
     return templates.TemplateResponse("admin_panel.html", {
@@ -222,6 +231,30 @@ def show_admin_panel(request: Request):
         "users": users,
         "reservations": reservations
     })
+
+    @router.post("/admin/delete-user")
+def delete_user(user_id: int = Form(...)):
+    db = SessionLocal()
+
+    # Neleidžiam ištrinti admin naudotojo
+    user = db.query(User).filter(User.id == user_id).first()
+    if user and user.username != "admin":
+        db.query(Reservation).filter(Reservation.username == user.username).delete()
+        db.query(User).filter(User.id == user_id).delete()
+        db.commit()
+
+    db.close()
+    return RedirectResponse("/admin-panel", status_code=302)
+
+    @router.post("/admin/delete-all-users")
+def delete_all_users():
+    db = SessionLocal()
+    db.query(Reservation).delete()
+    db.query(User).filter(User.username != "admin").delete()
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin-panel", status_code=302)
+
 
 # 4. Atsijungimas (jei reikia)
 @router.get("/admin-logout")

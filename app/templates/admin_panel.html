@@ -1,69 +1,40 @@
-﻿<!-- Papildyta admin_panel.html -->
-<!DOCTYPE html>
-<html lang="lt">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin panelė</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <h2>Vartotojų sąrašas</h2>
-        {% if users|length == 0 %}
-        <p>Nėra užsiregistravusių vartotojų.</p>
-        {% else %}
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Vartotojo vardas</th>
-                    <th>El. paštas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+﻿<h2>Vartotojų sąrašas</h2>
+{% if users|length == 0 %}
+<p>Nėra užsiregistravusių vartotojų.</p>
+{% else %}
+<table class="user-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Vartotojo vardas</th>
+            <th>El. paštas</th>
+            <th>Rezervacijų sk.</th>
+            <th>Veiksmas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.reservation_count }}</td>
+            <td>
+                {% if user.username != 'admin' %}
+                <form method="post" action="/admin/delete-user">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button class="btn admin-btn" type="submit">🗑️ Ištrinti</button>
+                </form>
+                {% else %}
+                <em>Admin</em>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-        <hr style="margin: 40px 0;">
-
-        <h2>Rezervacijos</h2>
-        {% if reservations|length == 0 %}
-        <p>Nėra rezervacijų.</p>
-        {% else %}
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>Naudotojas</th>
-                    <th>Staliukas</th>
-                    <th>Data</th>
-                    <th>Veiksmas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in reservations %}
-                <tr>
-                    <td>{{ r.username }}</td>
-                    <td>{{ r.table_id }}</td>
-                    <td>{{ r.reserved_at.strftime("%Y-%m-%d %H:%M") }}</td>
-                    <td>
-                        <form method="post" action="/admin/delete-reservation">
-                            <input type="hidden" name="reservation_id" value="{{ r.id }}">
-                            <button class="btn admin-btn" type="submit">Atšaukti</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
-    </div>
-</body>
-</html>
+<form method="post" action="/admin/delete-all-users" style="margin-top: 20px;">
+    <button class="btn admin-btn" type="submit" onclick="return confirm('Ar tikrai norite ištrinti VISUS vartotojus?')">⚠️ Ištrinti visus vartotojus</button>
+</form>
+{% endif %}
