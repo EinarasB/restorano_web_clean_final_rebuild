@@ -1,5 +1,4 @@
-﻿// === chatbot.js (AI su veiksmais - stabili pataisyta versija) ===
-let pendingAction = null;
+﻿let pendingAction = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
@@ -60,9 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
     };
 
-    // === chatbot.js: Patobulinta versija su patvirtinimu dienos pasiūlymui ===
-    // ... visa kita paliekam kaip yra ...
-
     const askAI = async (question) => {
         try {
             const response = await fetch("/chat", {
@@ -73,7 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
             let reply = data.reply || data;
-
             const rawText = typeof reply === "object" ? JSON.stringify(reply) : reply;
 
             const actions = [];
@@ -134,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         offerItems.forEach(name => simulateAdd(name));
                         addMessage("Dienos pasiūlymas", `✅ ĮDĖTA: ${offerItems.join(", ")}`, false);
                     }
-
                 }
                 return;
             }
@@ -146,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
             addMessage("Padavėjas DI", "⚠️ Klaida jungiantis prie serverio.", false);
         }
     };
-
 
     sendBtn.addEventListener("click", () => {
         const msg = chatInput.value.trim();
@@ -193,12 +186,29 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("🎤 Naršyklė nepalaiko kalbos atpažinimo");
     }
 
-
-    addMessage("Padavėjas DI", "Sveiki! Kuo galiu padėti šiandien? 😊");
-
     updateCartCount();
 
-    chatWidget.classList.add("active"); // 👈 automatiškai atidaro pokalbių langą
+    // Atidarom langą automatiškai
+    chatWidget.classList.add("active");
+
+    // Paleidžiam garsą, kai langas pakyla
+    function playChatSound() {
+        const audio = new Audio("/static/sounds/relax-message-tone.mp3");
+        audio.play().catch(e => console.warn("🎵 Nepavyko paleisti garso:", e));
+    }
     playChatSound();
 
+    // Garsinis pasisveikinimas tik 1 kartą per sesiją
+    if (!sessionStorage.getItem("ai-greeted")) {
+        sessionStorage.setItem("ai-greeted", "true");
+        setTimeout(() => {
+            const greeting = "Sveiki atvykę į RestoranasAI! Aš esu jūsų padavėjas dirbtinis intelektas. Ar galiu padėti išsirinkti vakarienę?";
+            addMessage("Padavėjas DI", greeting, false);
+            if ('speechSynthesis' in window) {
+                const msg = new SpeechSynthesisUtterance(greeting);
+                msg.lang = 'lt-LT';
+                speechSynthesis.speak(msg);
+            }
+        }, 800);
+    }
 });
