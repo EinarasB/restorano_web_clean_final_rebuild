@@ -22,7 +22,7 @@ from app.utils import hash_password
 from app.utils import verify_password
 import secrets
 from itsdangerous import URLSafeSerializer
-
+from sqlalchemy.orm import joinedload
 
 
 load_dotenv()
@@ -595,22 +595,18 @@ def order_history_by_date(request: Request, date: str = Path(...)):
         return RedirectResponse("/login", status_code=302)
 
     db = SessionLocal()
-    orders = db.query(Order).filter(
-        Order.username == username,
-        func.date(Order.timestamp) == date
-    ).all()
 
-    # Kiekvienam orderiui paimame jo items
-    all_items = {}
-    for order in orders:
-        items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
-        all_items[order.id] = items
+    orders = db.query(Order)\
+        .options(joinedload(Order.items))\
+        .filter(
+            Order.username == username,
+            func.date(Order.timestamp) == date
+        ).all()
 
     db.close()
 
     return templates.TemplateResponse("order_history_by_date.html", {
         "request": request,
         "selected_date": date,
-        "orders": orders,
-        "order_items_map": all_items
+        "orders": orders
     })
