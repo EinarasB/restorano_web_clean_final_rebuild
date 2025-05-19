@@ -92,10 +92,10 @@
                     <td><input class="form-control" type="text" name="description" value="{{ item.description }}"></td>
                     <td>
                         <select class="form-control" name="category">
-                            <option value="karstieji" {% if item.category == 'karstieji' %}selected{% endif %}>Karštieji</option>
-                            <option value="salotos" {% if item.category == 'salotos' %}selected{% endif %}>Salotos</option>
-                            <option value="desertai" {% if item.category == 'desertai' %}selected{% endif %}>Desertai</option>
-                            <option value="gerimai" {% if item.category == 'gerimai' %}selected{% endif %}>Gėrimai</option>
+                            <option value="karstieji" {% if item.category= ='karstieji' %}selected{% endif %}>Karštieji</option>
+                            <option value="salotos" {% if item.category= ='salotos' %}selected{% endif %}>Salotos</option>
+                            <option value="desertai" {% if item.category= ='desertai' %}selected{% endif %}>Desertai</option>
+                            <option value="gerimai" {% if item.category= ='gerimai' %}selected{% endif %}>Gėrimai</option>
                         </select>
                     </td>
                     <td><button class="btn" type="submit">Išsaugoti</button></td>
@@ -119,6 +119,7 @@
             </select>
             <button class="btn" type="submit">Pridėti</button>
         </form>
+        <a href="/" class="btn">Grįžti į pradžią</a>
     </div>
 </body>
 </html>
