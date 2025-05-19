@@ -1,35 +1,44 @@
-﻿let pendingAction = null;
+﻿// === chatbot.js (AI su veiksmais - patobulinta versija) ===
+let pendingAction = null;
 
 const speak = (text) => {
-    if (!('speechSynthesis' in window)) return;
+    if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'lt-LT';
 
-    const msg = new SpeechSynthesisUtterance(text);
-    msg.lang = 'lt-LT';
+        const loadVoices = () => {
+            const voices = speechSynthesis.getVoices();
+            if (!voices.length) {
+                setTimeout(loadVoices, 100);
+                return;
+            }
 
-    const waitForVoices = () => {
-        return new Promise((resolve) => {
-            let voices = speechSynthesis.getVoices();
-            if (voices.length) return resolve(voices);
+            const preferredVoice = voices.find(v =>
+                v.lang === 'lt-LT' &&
+                (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft'))
+            ) || voices.find(v => v.lang === 'lt-LT');
 
-            speechSynthesis.onvoiceschanged = () => {
-                voices = speechSynthesis.getVoices();
-                resolve(voices);
-            };
-        });
-    };
+            if (preferredVoice) msg.voice = preferredVoice;
 
-    waitForVoices().then((voices) => {
-        const preferred = voices.find(v =>
-            v.lang === 'lt-LT' &&
-            (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft'))
-        ) || voices.find(v => v.lang === 'lt-LT');
+            speechSynthesis.speak(msg);
+        };
 
-        if (preferred) msg.voice = preferred;
-
-        speechSynthesis.speak(msg);
-    });
+        loadVoices();
+    }
 };
 
+const showTyping = () => {
+    const p = document.createElement("p");
+    p.id = "typing-indicator";
+    p.innerHTML = "<em>Padavėjas DI rašo...</em>";
+    chatMessages.appendChild(p);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+};
+
+const removeTyping = () => {
+    const typing = document.getElementById("typing-indicator");
+    if (typing) typing.remove();
+};
 
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
@@ -92,11 +101,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const askAI = async (question) => {
         try {
+            showTyping();
+
             const response = await fetch("/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: question })
             });
+
+            removeTyping();
 
             const data = await response.json();
             let reply = data.reply || data;
@@ -168,6 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         } catch (e) {
             console.error("💥 Klaida:", e);
+            removeTyping();
             addMessage("Padavėjas DI", "⚠️ Klaida jungiantis prie serverio.", false);
         }
     };
@@ -219,26 +233,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateCartCount();
 
-    // Atidarom langą automatiškai
     chatWidget.classList.add("active");
 
-    // Paleidžiam garsą, kai langas pakyla
     function playChatSound() {
         const audio = new Audio("/static/sounds/relax-message-tone.mp3");
         audio.play().catch(e => console.warn("🎵 Nepavyko paleisti garso:", e));
     }
     playChatSound();
 
-    // Garsinis pasisveikinimas tik 1 kartą per sesiją
     if (!sessionStorage.getItem("ai-greeted")) {
         sessionStorage.setItem("ai-greeted", "true");
 
-        // ⏳ Palaukiam šiek tiek, tada sveikinam
         setTimeout(() => {
             const greeting = "Sveiki atvykę į RestoranasAI! Aš esu jūsų padavėjas dirbtinis intelektas. Ar galiu padėti išsirinkti vakarienę?";
             addMessage("Padavėjas DI", greeting, false);
             speak(greeting);
         }, 800);
+
+        setTimeout(() => {
+            const followUp = "Ar norėtumėte sužinoti mūsų šiandienos pasiūlymą?";
+            addMessage("Padavėjas DI", followUp, false);
+            speak(followUp);
+        }, 3500);
     }
 
+    // === Tipiniai greiti klausimai ===
+    const suggestionContainer = document.createElement("div");
+    suggestionContainer.id = "suggestions";
+    suggestionContainer.innerHTML = `
+        <button onclick="askAI('Parodyk dienos pasiūlymą')">🍽️ Dienos pasiūlymas</button>
+        <button onclick="askAI('Ką galiu gauti iki 5 eurų?')">💶 Iki €5</button>
+        <button onclick="askAI('Kas populiariausia šiandien?')">🔥 Populiariausi</button>
+    `;
+    chatWidget.appendChild(suggestionContainer);
 });
