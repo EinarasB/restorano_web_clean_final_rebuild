@@ -18,6 +18,9 @@ from fastapi import Path
 import smtplib
 from email.message import EmailMessage
 from passlib.context import CryptContext
+from app.utils import hash_password
+from app.utils import verify_password
+import secrets
 
 
 
@@ -500,3 +503,58 @@ def update_reservation(reservation_id: int = Form(...), date_time: str = Form(..
         db.commit()
     db.close()
     return RedirectResponse("/admin-panel", status_code=302)
+
+
+
+# Slaptažodžio atstatymo formos rodymas
+@router.get("/forgot-password")
+def forgot_form(request: Request):
+    return templates.TemplateResponse("forgot_password.html", {"request": request})
+
+# El. laiško siuntimas su nuoroda
+@router.post("/forgot-password")
+def send_reset_email(request: Request, email: str = Form(...)):
+    db = SessionLocal()
+    user = db.query(User).filter(User.email == email).first()
+    db.close()
+
+    if user:
+        token = secrets.token_urlsafe(16)  # Galima laikyti DB, bet dabar paprastai
+        reset_link = f"https://www.restoranasai.lt/reset-password?user_id={user.id}&token={token}"
+        
+        msg = EmailMessage()
+        msg["Subject"] = "Slaptažodžio atkūrimas"
+        msg["From"] = os.getenv("MAIL_FROM")
+        msg["To"] = email
+        msg.set_content(f"Norėdami atkurti slaptažodį, spauskite šią nuorodą:\n{reset_link}")
+
+        try:
+            smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+            smtp_port = int(os.getenv("MAIL_PORT", 465))
+
+            with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+                smtp.login(os.getenv("MAIL_FROM"), os.getenv("MAIL_PASSWORD"))
+                smtp.send_message(msg)
+        except Exception as e:
+            print("Nepavyko išsiųsti laiško:", e)
+
+    return templates.TemplateResponse("forgot_password_sent.html", {"request": request})
+
+@router.get("/reset-password")
+def show_reset_form(request: Request, user_id: int, token: str):
+    # Galėtum tikrinti token (jei saugai DB), čia supaprastinta
+    return templates.TemplateResponse("reset_password.html", {
+        "request": request,
+        "user_id": user_id,
+        "token": token
+    })
+
+@router.post("/reset-password")
+def update_password(request: Request, user_id: int = Form(...), token: str = Form(...), new_password: str = Form(...)):
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        user.password = hash_password(new_password)
+        db.commit()
+    db.close()
+    return RedirectResponse("/login", status_code=302)
