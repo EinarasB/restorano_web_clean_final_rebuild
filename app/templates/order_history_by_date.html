@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Užsakymai pagal datą</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Užsakymai: {{ selected_date }}</h1>
+
+        {% if orders %}
+        <ul>
+            {% for order in orders %}
+            <li>
+                <p><strong>Užsakymas ID:</strong> {{ order.id }}</p>
+                <ul>
+                    {% for item in order.items %}
+                    <li>{{ item.quantity }} x {{ item.name }} - €{{ '%.2f' % (item.price * item.quantity) }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Nerasta užsakymų pasirinktai datai.</p>
+        {% endif %}
+
+        <a href="/order-history" class="btn">🔙 Grįžti atgal</a>
+    </div>
+</body>
+</html>

@@ -566,3 +566,49 @@ def reset_password(request: Request, token: str = Form(...), password: str = For
         db.commit()
     db.close()
     return RedirectResponse("/login", status_code=302)
+
+@router.get("/order-history")
+def order_history_dates(request: Request):
+    username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse("/login", status_code=302)
+
+    db = SessionLocal()
+    dates = db.query(func.date(Order.timestamp))\
+              .filter(Order.username == username)\
+              .distinct().all()
+    db.close()
+
+    date_list = [str(date[0]) for date in dates]
+    return templates.TemplateResponse("order_history_dates.html", {
+        "request": request,
+        "history_dates": date_list
+    })
+
+
+@router.get("/order-history/{date}")
+def order_history_by_date(request: Request, date: str = Path(...)):
+    username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse("/login", status_code=302)
+
+    db = SessionLocal()
+    orders = db.query(Order).filter(
+        Order.username == username,
+        func.date(Order.timestamp) == date
+    ).all()
+
+    # Kiekvienam orderiui paimame jo items
+    all_items = {}
+    for order in orders:
+        items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
+        all_items[order.id] = items
+
+    db.close()
+
+    return templates.TemplateResponse("order_history_by_date.html", {
+        "request": request,
+        "selected_date": date,
+        "orders": orders,
+        "order_items_map": all_items
+    })
