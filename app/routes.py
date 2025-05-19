@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
-from app.models import SessionLocal, User, Order, OrderItem, Reservation, ChatMessage
+from app.models import SessionLocal, User, Order, OrderItem, Reservation, ChatMessage, MenuItem
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -17,6 +17,7 @@ from sqlalchemy import func
 from fastapi import Path
 import smtplib
 from email.message import EmailMessage
+
 
 
 load_dotenv()
@@ -289,7 +290,7 @@ def reset_reservations():
     return RedirectResponse("/admin", status_code=302)
 
 @router.get("/admin/edit-user")
-def edit_user_form(request: Request, user_id: int = Form(...)):
+def edit_user_form(request: Request, user_id: int):
     db: Session = SessionLocal()
     user = db.query(User).filter(User.id == user_id).first()
     db.close()
