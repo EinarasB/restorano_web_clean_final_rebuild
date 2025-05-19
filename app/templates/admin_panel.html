@@ -1,40 +1,157 @@
-﻿<h2>Vartotojų sąrašas</h2>
-{% if users|length == 0 %}
-<p>Nėra užsiregistravusių vartotojų.</p>
-{% else %}
-<table class="user-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Vartotojo vardas</th>
-            <th>El. paštas</th>
-            <th>Rezervacijų sk.</th>
-            <th>Veiksmas</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.reservation_count }}</td>
-            <td>
-                {% if user.username != 'admin' %}
-                <form method="post" action="/admin/delete-user">
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn admin-btn" type="submit">🗑️ Ištrinti</button>
-                </form>
-                {% else %}
-                <em>Admin</em>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+﻿<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Administratoriaus Panelė</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
 
-<form method="post" action="/admin/delete-all-users" style="margin-top: 20px;">
-    <button class="btn admin-btn" type="submit" onclick="return confirm('Ar tikrai norite ištrinti VISUS vartotojus?')">⚠️ Ištrinti visus vartotojus</button>
-</form>
-{% endif %}
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .btn:hover {
+                background-color: #0056b3;
+            }
+
+        .danger {
+            background-color: #dc3545;
+        }
+
+            .danger:hover {
+                background-color: #a71d2a;
+            }
+
+        .section-actions {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Administratoriaus Panelė</h1>
+
+        <h2>Vartotojai</h2>
+        {% if users|length == 0 %}
+        <p>Nėra vartotojų.</p>
+        {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vardas</th>
+                    <th>El. paštas</th>
+                    <th>Rezervacijų</th>
+                    <th>Veiksmai</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.reservation_count }}</td>
+                    <td>
+                        {% if user.username != 'admin' %}
+                        <form method="post" action="/admin/delete-user" style="display:inline;">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button class="btn danger" type="submit">Ištrinti vartotoją</button>
+                        </form>
+                        {% else %}
+                        <em>Administratorius</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="section-actions">
+            <form method="post" action="/admin/delete-all-users">
+                <button class="btn danger" onclick="return confirm('Ar tikrai norite ištrinti visus vartotojus?')">Ištrinti visus vartotojus</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <h2>Rezervacijos</h2>
+        {% if reservations|length == 0 %}
+        <p>Nėra rezervacijų.</p>
+        {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Vartotojas</th>
+                    <th>Staliukas</th>
+                    <th>Laikas</th>
+                    <th>Veiksmai</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservations %}
+                <tr>
+                    <td>{{ r.username }}</td>
+                    <td>{{ r.table_id }}</td>
+                    <td>{{ r.reserved_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>
+                        <form method="post" action="/admin/delete-reservation">
+                            <input type="hidden" name="reservation_id" value="{{ r.id }}">
+                            <button class="btn danger" type="submit">Atšaukti rezervaciją</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="section-actions">
+            <form method="post" action="/admin/reset-reservations">
+                <button class="btn danger" onclick="return confirm('Ar tikrai norite išvalyti visas rezervacijas?')">Išvalyti visas rezervacijas</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
