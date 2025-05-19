@@ -199,5 +199,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCount();
 
     chatWidget.classList.add("active"); // 👈 automatiškai atidaro pokalbių langą
+    playChatSound();
 
 });
