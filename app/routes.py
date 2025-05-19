@@ -17,6 +17,7 @@ from sqlalchemy import func
 from fastapi import Path
 import smtplib
 from email.message import EmailMessage
+from passlib.context import CryptContext
 
 
 
@@ -115,6 +116,15 @@ async def chat_endpoint(req: ChatRequest, request: Request):
     finally:
         db.close()
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
 # ======== REGISTRACIJA ==========
 @router.get("/register")
 def register_form(request: Request):
@@ -123,12 +133,12 @@ def register_form(request: Request):
 @router.post("/register")
 def register_user(request: Request, username: str = Form(...), email: str = Form(...), password: str = Form(...)):
     db = SessionLocal()
-    user = User(username=username, email=email, password=password)
+    hashed_pw = hash_password(password)
+    user = User(username=username, email=email, password=hashed_pw)
     try:
         db.add(user)
         db.commit()
 
-        # El. pašto siuntimas po sėkmingos registracijos
         try:
             msg = EmailMessage()
             msg['Subject'] = 'Registracija sėkminga'
@@ -153,7 +163,6 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
         except Exception as e:
             print("❌ Nepavyko išsiųsti el. laiško:", e)
 
-        # ✅ Šita dalis turi būti įtraukta į pagrindinį try bloką!
         response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
         response.set_cookie(key="username", value=username)
         return response
@@ -175,6 +184,20 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
 
 
 # ======== AUTH ==========
+@router.post("/login")
+def login_user(request: Request, username: str = Form(...), password: str = Form(...)):
+    db: Session = SessionLocal()
+    user = db.query(User).filter(User.username == username).first()
+    db.close()
+    if user and verify_password(password, user.password):
+        response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+        response.set_cookie(key="username", value=username)
+        return response
+    else:
+        error = "Neteisingas vartotojo vardas arba slaptažodis."
+        return templates.TemplateResponse("login.html", {"request": request, "error": error})
+
+
 @router.get("/logout")
 def logout():
     response = RedirectResponse(url="/guest", status_code=302)
@@ -185,18 +208,7 @@ def logout():
 def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-@router.post("/login")
-def login_user(request: Request, username: str = Form(...), password: str = Form(...)):
-    db: Session = SessionLocal()
-    user = db.query(User).filter(User.username == username, User.password == password).first()
-    db.close()
-    if user:
-        response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
-        response.set_cookie(key="username", value=username)
-        return response
-    else:
-        error = "Neteisingas vartotojo vardas arba slaptažodis."
-        return templates.TemplateResponse("login.html", {"request": request, "error": error})
+
 
 # ======== ADMIN ==========
 # ======== ADMIN ==========
