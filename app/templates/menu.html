@@ -9,10 +9,11 @@
     <script src="/static/js/script.js" defer></script>
 </head>
 <body>
-
-    <a href="/" class="pradzia-btn">Pradžia</a>
+    <div class="leftbutonas">
+        <a href="/" class="pradzia-btn">Pradžia</a>
+    </div>
+    
     <div class="top-buttons">
-
         {% if request.cookies.get("username") %}
         <a href="/logout" class="logout-btn">🚪 Atsijungti</a>
         {% endif %}

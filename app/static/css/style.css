@@ -690,6 +690,15 @@ button.reserved {
     z-index: 1000;
 }
 
+.leftbutonas {
+    position: fixed;
+    top: 20px;
+    right: 400px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
 .logout-btn {
     background-color: #ef4444;
     color: white;
