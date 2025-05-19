@@ -28,14 +28,3 @@
 
     updateCartCount();
 });
-
-function continueAsGuest() {
-    // 🔁 Ištrina username slapuką
-    document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-    // 🛒 Išvalo krepšelį
-    localStorage.removeItem("cart");
-
-    // 🔄 Peradresuoja į svečio meniu
-    window.location.href = "/guest";
-}
