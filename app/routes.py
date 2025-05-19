@@ -198,11 +198,13 @@ def login_user(request: Request, username: str = Form(...), password: str = Form
         return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
 # ======== ADMIN ==========
+# ======== ADMIN ==========
+
 @router.get("/admin-login")
 def show_admin_login(request: Request):
     return templates.TemplateResponse("admin_login.html", {"request": request})
 
-# 2. Tikrina vartotojo vardą ir slaptažodį
+
 @router.post("/admin")
 def admin_login(request: Request, username: str = Form(...), password: str = Form(...)):
     correct_username = os.getenv("ADMIN_USER", "admin")
@@ -216,7 +218,7 @@ def admin_login(request: Request, username: str = Form(...), password: str = For
         error = "❌ Neteisingas vartotojo vardas arba slaptažodis."
         return templates.TemplateResponse("admin_login.html", {"request": request, "error": error})
 
-# 3. Admin panelė, pasiekiama tik prisijungus
+
 @router.get("/admin-panel")
 def show_admin_panel(request: Request):
     if request.cookies.get("admin_auth") != "true":
@@ -239,21 +241,20 @@ def show_admin_panel(request: Request):
         "reservations": reservations
     })
 
-    @router.post("/admin/delete-user")
+
+@router.post("/admin/delete-user")
 def delete_user(user_id: int = Form(...)):
     db = SessionLocal()
-
-    # Neleidžiam ištrinti admin naudotojo
     user = db.query(User).filter(User.id == user_id).first()
     if user and user.username != "admin":
         db.query(Reservation).filter(Reservation.username == user.username).delete()
         db.query(User).filter(User.id == user_id).delete()
         db.commit()
-
     db.close()
     return RedirectResponse("/admin-panel", status_code=302)
 
-    @router.post("/admin/delete-all-users")
+
+@router.post("/admin/delete-all-users")
 def delete_all_users():
     db = SessionLocal()
     db.query(Reservation).delete()
@@ -263,12 +264,12 @@ def delete_all_users():
     return RedirectResponse("/admin-panel", status_code=302)
 
 
-# 4. Atsijungimas (jei reikia)
 @router.get("/admin-logout")
 def admin_logout():
     response = RedirectResponse("/admin-login", status_code=302)
     response.delete_cookie("admin_auth")
     return response
+
 
 @router.post("/admin/delete-reservation")
 def delete_reservation(reservation_id: int = Form(...)):
@@ -286,6 +287,7 @@ def reset_reservations():
     db.commit()
     db.close()
     return RedirectResponse("/admin", status_code=302)
+
 
 # ======== MENU / GUEST ==========
 @router.get("/guest")
