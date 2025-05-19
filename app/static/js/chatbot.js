@@ -257,13 +257,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3500);
     }
 
-    // === Tipiniai greiti klausimai ===
-    const suggestionContainer = document.createElement("div");
-    suggestionContainer.id = "suggestions";
-    suggestionContainer.innerHTML = `
-        <button onclick="askAI('Parodyk dienos pasiūlymą')">🍽️ Dienos pasiūlymas</button>
-        <button onclick="askAI('Ką galiu gauti iki 5 eurų?')">💶 Iki €5</button>
-        <button onclick="askAI('Kas populiariausia šiandien?')">🔥 Populiariausi</button>
-    `;
     chatWidget.appendChild(suggestionContainer);
 });
