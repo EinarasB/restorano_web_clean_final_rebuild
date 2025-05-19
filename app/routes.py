@@ -21,6 +21,7 @@ from passlib.context import CryptContext
 from app.utils import hash_password
 from app.utils import verify_password
 import secrets
+from itsdangerous import URLSafeSerializer
 
 
 
@@ -506,12 +507,13 @@ def update_reservation(reservation_id: int = Form(...), date_time: str = Form(..
 
 
 
-# Slaptažodžio atstatymo formos rodymas
+secret_key = os.getenv("SECRET_KEY", "super-secret-key")
+serializer = URLSafeSerializer(secret_key, salt="reset-password")
+
 @router.get("/forgot-password")
-def forgot_form(request: Request):
+def forgot_password_form(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
 
-# El. laiško siuntimas su nuoroda
 @router.post("/forgot-password")
 def send_reset_email(request: Request, email: str = Form(...)):
     db = SessionLocal()
@@ -519,20 +521,18 @@ def send_reset_email(request: Request, email: str = Form(...)):
     db.close()
 
     if user:
-        token = secrets.token_urlsafe(16)  # Galima laikyti DB, bet dabar paprastai
-        reset_link = f"https://www.restoranasai.lt/reset-password?user_id={user.id}&token={token}"
-        
+        token = serializer.dumps(user.email)
+        reset_url = f"https://www.restoranasai.lt/reset-password?token={token}"
+
         msg = EmailMessage()
-        msg["Subject"] = "Slaptažodžio atkūrimas"
+        msg["Subject"] = "Slaptažodžio atstatymas"
         msg["From"] = os.getenv("MAIL_FROM")
         msg["To"] = email
-        msg.set_content(f"Norėdami atkurti slaptažodį, spauskite šią nuorodą:\n{reset_link}")
-
+        msg.set_content(
+            f"Sveiki, {user.username},\n\nNorėdami atkurti slaptažodį, spauskite šią nuorodą:\n{reset_url}\n\nJei tai ne jūs, ignoruokite šį laišką."
+        )
         try:
-            smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
-            smtp_port = int(os.getenv("MAIL_PORT", 465))
-
-            with smtplib.SMTP_SSL(smtp_server, smtp_port) as smtp:
+            with smtplib.SMTP_SSL(os.getenv("MAIL_SERVER"), int(os.getenv("MAIL_PORT"))) as smtp:
                 smtp.login(os.getenv("MAIL_FROM"), os.getenv("MAIL_PASSWORD"))
                 smtp.send_message(msg)
         except Exception as e:
@@ -540,21 +540,26 @@ def send_reset_email(request: Request, email: str = Form(...)):
 
     return templates.TemplateResponse("forgot_password_sent.html", {"request": request})
 
+
 @router.get("/reset-password")
-def show_reset_form(request: Request, user_id: int, token: str):
-    # Galėtum tikrinti token (jei saugai DB), čia supaprastinta
-    return templates.TemplateResponse("reset_password.html", {
-        "request": request,
-        "user_id": user_id,
-        "token": token
-    })
+def reset_password_form(request: Request, token: str):
+    try:
+        email = serializer.loads(token)
+    except Exception:
+        return templates.TemplateResponse("reset_password.html", {"request": request, "error": "Netinkama nuoroda", "token": token})
+    return templates.TemplateResponse("reset_password.html", {"request": request, "token": token})
 
 @router.post("/reset-password")
-def update_password(request: Request, user_id: int = Form(...), token: str = Form(...), new_password: str = Form(...)):
+def reset_password(request: Request, token: str = Form(...), password: str = Form(...)):
+    try:
+        email = serializer.loads(token)
+    except Exception:
+        return templates.TemplateResponse("reset_password.html", {"request": request, "error": "Netinkama nuoroda", "token": token})
+
     db = SessionLocal()
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.email == email).first()
     if user:
-        user.password = hash_password(new_password)
+        user.password = hash_password(password)
         db.commit()
     db.close()
     return RedirectResponse("/login", status_code=302)
