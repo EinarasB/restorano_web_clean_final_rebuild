@@ -148,9 +148,9 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
         except Exception as e:
             print("❌ Nepavyko išsiųsti el. laiško:", e)
 
-        response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
-response.set_cookie(key="username", value=username)
-return response
+    response = RedirectResponse("/menu", status_code=HTTP_302_FOUND)
+    response.set_cookie(key="username", value=username)
+    return response
 
 
     except IntegrityError:
