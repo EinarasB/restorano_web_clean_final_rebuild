@@ -12,9 +12,7 @@
     
 
     <div class="top-buttons">
-        <div class="left-buttons">
             <a href="/" class="pradzia-btn">Pradžia</a>
-        </div>
         {% if request.cookies.get("username") %}
         <a href="/logout" class="logout-btn">🚪 Atsijungti</a>
         {% endif %}
