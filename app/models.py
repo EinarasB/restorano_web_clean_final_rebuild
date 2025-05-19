@@ -24,7 +24,9 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
+    username = Column(String)
     payment_method = Column(String)
+    timestamp = Column(DateTime, default=datetime.utcnow)
     items = relationship("OrderItem", back_populates="order")
 
 class OrderItem(Base):
