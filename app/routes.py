@@ -328,7 +328,10 @@ def update_user(request: Request, user_id: int = Form(...), username: str = Form
 # ======== MENU / GUEST ==========
 @router.get("/guest")
 def guest_menu(request: Request):
-    return templates.TemplateResponse("menu.html", {"request": request})
+    response = templates.TemplateResponse("menu.html", {"request": request})
+    response.delete_cookie("username")  # Atsijungia
+    return response
+
 
 @router.get("/menu")
 def logged_in_menu(request: Request):
