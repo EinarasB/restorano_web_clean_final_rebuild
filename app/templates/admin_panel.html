@@ -21,7 +21,7 @@
             border-radius: 8px;
         }
 
-        h2 {
+        h1, h2 {
             border-bottom: 2px solid #eee;
             padding-bottom: 10px;
             margin-top: 40px;
@@ -52,6 +52,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            margin: 2px;
         }
 
             .btn:hover {
@@ -69,20 +70,41 @@
         .section-actions {
             margin-top: 20px;
         }
+
+        .search-box {
+            margin: 20px 0;
+        }
+
+        .stats {
+            background: #eef3f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Administratoriaus Panelė</h1>
 
+        <div class="stats">
+            <strong>Statistika:</strong><br>
+            Viso vartotojų: {{ users|length }}<br>
+            Viso rezervacijų: {{ reservations|length }}
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Ieškoti pagal vartotojo vardą..." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
         <h2>Vartotojai</h2>
         {% if users|length == 0 %}
         <p>Nėra vartotojų.</p>
         {% else %}
-        <table>
+        <table id="usersTable">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Vardas</th>
                     <th>El. paštas</th>
                     <th>Rezervacijų</th>
@@ -92,7 +114,7 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.id }}</td>
+                    <td>{{ loop.index }}</td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.reservation_count }}</td>
@@ -100,7 +122,11 @@
                         {% if user.username != 'admin' %}
                         <form method="post" action="/admin/delete-user" style="display:inline;">
                             <input type="hidden" name="user_id" value="{{ user.id }}">
-                            <button class="btn danger" type="submit">Ištrinti vartotoją</button>
+                            <button class="btn danger" type="submit">Ištrinti</button>
+                        </form>
+                        <form method="get" action="/admin/edit-user" style="display:inline;">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button class="btn" type="submit">Redaguoti</button>
                         </form>
                         {% else %}
                         <em>Administratorius</em>
@@ -139,7 +165,7 @@
                     <td>
                         <form method="post" action="/admin/delete-reservation">
                             <input type="hidden" name="reservation_id" value="{{ r.id }}">
-                            <button class="btn danger" type="submit">Atšaukti rezervaciją</button>
+                            <button class="btn danger" type="submit">Atšaukti</button>
                         </form>
                     </td>
                 </tr>
@@ -153,5 +179,22 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        // Paieška pagal vartotojo vardą
+        const searchInput = document.getElementById("searchInput");
+        const usersTable = document.getElementById("usersTable").getElementsByTagName("tbody")[0];
+
+        searchInput.addEventListener("keyup", function () {
+            const filter = searchInput.value.toLowerCase();
+            const rows = usersTable.getElementsByTagName("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName("td")[1];
+                const name = nameCell.textContent || nameCell.innerText;
+                rows[i].style.display = name.toLowerCase().includes(filter) ? "" : "none";
+            }
+        });
+    </script>
 </body>
 </html>
