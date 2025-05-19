@@ -134,7 +134,7 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
             msg['From'] = os.getenv("MAIL_FROM")
             msg['To'] = email
             msg.set_content(
-                f"Sveiki, {username}!\n\nDėkojame, kad užsiregistravote. Linkime malonaus naudojimosi mūsų sistema!"
+                f"Sveiki, {username}!\n\nDėkojame, kad prisijungėte prie RestoranasAI.lt\n\nJūsų paskyra sėkmingai sukurta – nuo šiol galite lengvai rezervuoti staliukus, peržiūrėti meniu ir bendrauti su mūsų DI padavėju.\nJei turite klausimų ar pasiūlymų, rašykite mums į el. paštą: restoranasdi@gmail.com\nSkanaus ir malonaus naudojimosi sistema!\n\nEinaras Bargaila\nhttps://www.restoranasai.lt"
             )
 
             # Naudojam SMTP_SSL jei jungiamės per 465 portą
