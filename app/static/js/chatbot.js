@@ -1,5 +1,6 @@
 ﻿// === chatbot.js (AI su veiksmais - patobulinta versija) ===
 let pendingAction = null;
+let chatMessages; // 👈 Globaliai, kad veiktų visose funkcijose
 
 const speak = (text) => {
     if ('speechSynthesis' in window) {
@@ -43,7 +44,7 @@ const removeTyping = () => {
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
-    const chatMessages = document.getElementById("chat-messages");
+    chatMessages = document.getElementById("chat-messages"); // 👈 dabar priskiriam
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("send-btn");
 
@@ -200,6 +201,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     toggleBtn.addEventListener("click", () => {
         chatWidget.classList.toggle("active");
+        if (chatWidget.classList.contains("active")) {
+            playChatSound();
+        }
     });
 
     const micBtn = document.getElementById("mic-btn");
@@ -239,7 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const audio = new Audio("/static/sounds/relax-message-tone.mp3");
         audio.play().catch(e => console.warn("🎵 Nepavyko paleisti garso:", e));
     }
-    playChatSound();
 
     if (!sessionStorage.getItem("ai-greeted")) {
         sessionStorage.setItem("ai-greeted", "true");
@@ -251,11 +254,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 800);
 
         setTimeout(() => {
-            const followUp = "Ar norėtumėte sužinoti mūsų šiandienos pasiūlymą?";
+            const followUp = "Beje, šiandien siūlome Margaritą, Latte kavą ir spurgą. Jei norėsite – galiu pridėti į krepšelį.";
             addMessage("Padavėjas DI", followUp, false);
-            speak(followUp);
-        }, 3500);
+        }, 30000); // 30 sekundžių
     }
-
-    chatWidget.appendChild(suggestionContainer);
 });
