@@ -1,5 +1,31 @@
 ﻿let pendingAction = null;
 
+const speak = (text) => {
+    if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'lt-LT';
+
+        const loadVoices = () => {
+            const voices = speechSynthesis.getVoices();
+            if (!voices.length) {
+                setTimeout(loadVoices, 100);
+                return;
+            }
+
+            const preferredVoice = voices.find(v =>
+                v.lang === 'lt-LT' &&
+                (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft'))
+            ) || voices.find(v => v.lang === 'lt-LT');
+
+            if (preferredVoice) msg.voice = preferredVoice;
+
+            speechSynthesis.speak(msg);
+        };
+
+        loadVoices();
+    }
+};
+
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
@@ -201,14 +227,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Garsinis pasisveikinimas tik 1 kartą per sesiją
     if (!sessionStorage.getItem("ai-greeted")) {
         sessionStorage.setItem("ai-greeted", "true");
+
+        // ⏳ Palaukiam šiek tiek, tada sveikinam
         setTimeout(() => {
             const greeting = "Sveiki atvykę į RestoranasAI! Aš esu jūsų padavėjas dirbtinis intelektas. Ar galiu padėti išsirinkti vakarienę?";
             addMessage("Padavėjas DI", greeting, false);
-            if ('speechSynthesis' in window) {
-                const msg = new SpeechSynthesisUtterance(greeting);
-                msg.lang = 'lt-LT';
-                speechSynthesis.speak(msg);
-            }
+            speak(greeting);
         }, 800);
     }
+
 });
