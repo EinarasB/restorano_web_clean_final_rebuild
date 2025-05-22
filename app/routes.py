@@ -77,6 +77,8 @@ async def chat_endpoint(req: ChatRequest, request: Request):
                 "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., "
                 "'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: "
                 "'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
+                "Jei vartotojas klausia apie laisvus staliukus, grąžink veiksmą: {\"action\": \"check_tables\" }."
+                "Jei nori atšaukti rezervaciją, naudok: {\"action\": \"cancel_reservation\" }."
             )
         }
 
