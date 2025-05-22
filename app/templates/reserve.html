@@ -15,7 +15,7 @@
             <div class="map-container">
                 <img src="/static/images/map.jpg" alt="Restorano žemėlapis" class="floor-map">
 
-                {% for i in range(1, 13) %}
+                {% for i in range(1, 14) %}
                 <button type="button"
                         class="table-btn {% if 'T' ~ i in reserved_tables %}reserved{% endif %}"
                         data-table="T{{ i }}"
