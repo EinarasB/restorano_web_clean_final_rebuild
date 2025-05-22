@@ -708,7 +708,7 @@ def cancel_reservation(request: Request):
         db.close()
         return JSONResponse(status_code=404, content={"detail": "Rezervacija nerasta"})
 
-@app.get("/my-reservations")
+@router.get("/my-reservations")
 def my_reservations(username: str = Depends(get_username_from_cookie), db: Session = Depends(get_db)):
     reservations = db.query(Reservation).filter_by(username=username).all()
     result = [

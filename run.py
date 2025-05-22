@@ -12,6 +12,7 @@ load_dotenv()
 
 
 app = FastAPI()
+app.include_router(register_router)
 print("🔗 DATABASE_URL:", os.environ.get("DATABASE_URL"))
 Base.metadata.create_all(bind=engine)
 print("✅ Duomenų bazės lentelės sukurtos")
