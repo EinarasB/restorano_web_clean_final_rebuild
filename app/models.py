@@ -48,6 +48,10 @@ class Reservation(Base):
     table_id = Column(String, nullable=False)
     reserved_at = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"))
+    date = Column(String, nullable=False)
+    time = Column(String, nullable=False)
+
+
 
 
 class ChatMessage(Base):
