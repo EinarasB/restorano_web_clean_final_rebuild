@@ -646,23 +646,14 @@ def order_history_by_date(request: Request, date: str = Path(...)):
         "orders": orders
     })
 
-@router.get("/available-tables")
-def get_available_tables(
-    reservation_date: str = Query(..., alias="date"),
-    reservation_time: str = Query(..., alias="time"),
-    db: Session = Depends(get_db)
-):
+@app.get("/available-tables")
+def available_tables(reservation_date: str, reservation_time: str, db: Session = Depends(get_db)):
+    reserved = db.query(Reservation.table_id).filter_by(date=reservation_date, time=reservation_time).all()
+    reserved_ids = {res[0] for res in reserved}
     all_tables = [f"T{i}" for i in range(1, 14)]
-
-    reserved = db.query(Reservation.table_id).filter_by(
-        date=reservation_date,
-        time=reservation_time
-    ).all()
-
-    reserved_tables = [r.table_id for r in reserved]
-    available = [t for t in all_tables if t not in reserved_tables]
-
+    available = [t for t in all_tables if t not in reserved_ids]
     return {"available_tables": available}
+
 
 
 @router.post("/reserve-table")
@@ -717,4 +708,12 @@ def cancel_reservation(request: Request):
         db.close()
         return JSONResponse(status_code=404, content={"detail": "Rezervacija nerasta"})
 
+@app.get("/my-reservations")
+def my_reservations(username: str = Depends(get_username_from_cookie), db: Session = Depends(get_db)):
+    reservations = db.query(Reservation).filter_by(username=username).all()
+    result = [
+        {"table_id": res.table_id, "date": res.date.isoformat(), "time": res.time}
+        for res in reservations
+    ]
+    return {"reservations": result, "username": username}
 

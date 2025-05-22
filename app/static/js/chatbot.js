@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     else if (act.action === "reserve_table") {
                         const formData = new FormData();
-                        formData.append("table_id", `T${act.table_id}`); // 👈 pridėta raidė "T"
+                        formData.append("table_id", act.table_id); // be papildomos "T"
                         formData.append("date", act.date);
                         formData.append("time", act.time);
 
@@ -195,6 +195,19 @@ document.addEventListener("DOMContentLoaded", function () {
                                 addMessage("Sistema", "⚠️ Nepavyko atlikti užklausos", false);
                             });
                     }
+
+                    else if (act.action === "my_reservations") {
+                        const res = await fetch("/my-reservations");
+                        const data = await res.json();
+
+                        if (!data.reservations.length) {
+                            addMessage("Sistema", `🪑 Neturite jokių rezervacijų.`, false);
+                        } else {
+                            const lines = data.reservations.map(r => `• ${r.table_id} – ${r.date} ${r.time}`);
+                            addMessage("Rezervacijos", `👤 Prisijungęs kaip: ${data.username}<br>${lines.join("<br>")}`, false);
+                        }
+                    }
+
 
 
 
