@@ -89,7 +89,7 @@ async def chat_endpoint(req: ChatRequest, request: Request):
     "Jei vartotojas klausia apie laisvus staliukus, grąžink veiksmą: {\"action\": \"check_tables\" }."
     "Jei nori atšaukti rezervaciją, naudok: {\"action\": \"cancel_reservation\" }."
                 "- {\"action\": \"check_tables\", \"date\": \"2025-05-22\", \"time\": \"18:00\" }\n"
-                "- {\"action\": \"reserve_table\", \"table_id\": 5, \"date\": \"2025-05-22\", \"time\": \"18:00\" }\n"
+                "Jei nori rezervuoti staliuką, naudok: {\"action\": \"reserve_table\", \"table_id\": \"T5\", \"date\": \"2025-05-22\", \"time\": \"18:00\"}"
                 "- {\"\action\": \"cancel_reservation\" }\n"
 
             )
@@ -663,7 +663,7 @@ def get_available_tables(
     return {"available_tables": available}
 
 @router.post("/reserve-table")
-def reserve_table(request: Request, table_id: int = Form(...), date: str = Form(...), time: str = Form(...)):
+def reserve_table(request: Request, table_id: str = Form(...), date: str = Form(...), time: str = Form(...)):
     username = request.cookies.get("username")
     if not username:
         return JSONResponse(status_code=401, content={"detail": "Not logged in"})
@@ -679,11 +679,12 @@ def reserve_table(request: Request, table_id: int = Form(...), date: str = Form(
         db.close()
         return JSONResponse(status_code=400, content={"detail": "Table already reserved"})
 
-    new_res = Reservation(table_id=table_id, date=date, time=time, user_id=user.id)
+    new_res = Reservation(table_id=table_id, date=date, time=time, user_id=user.id, username=username)
     db.add(new_res)
     db.commit()
     db.close()
     return {"message": f"✅ Staliukas {table_id} rezervuotas {date} {time}"}
+
 
 
 

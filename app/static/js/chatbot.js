@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     else if (act.action === "reserve_table") {
                         const formData = new FormData();
-                        formData.append("table_id", act.table_id);
+                        formData.append("table_id", `T${act.table_id}`); // 👈 pridėta raidė "T"
                         formData.append("date", act.date);
                         formData.append("time", act.time);
 
@@ -195,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 addMessage("Sistema", "⚠️ Nepavyko atlikti užklausos", false);
                             });
                     }
+
 
 
                     else if (act.action === "check_tables") {
