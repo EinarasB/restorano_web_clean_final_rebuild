@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship, sessionmaker
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from app.db import Base
 load_dotenv()
 
 
