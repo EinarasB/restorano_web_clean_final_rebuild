@@ -637,14 +637,21 @@ def order_history_by_date(request: Request, date: str = Path(...)):
     })
 
 @router.get("/available-tables")
-def available_tables(date: str, time: str):
-    db = SessionLocal()
-    reservations = db.query(Reservation).filter_by(date=date, time=time).all()
-    reserved = [r.table_id for r in reservations]
-    all_tables = set(range(1, 14))  # jei 13 staliukų
-    free_tables = list(all_tables - set(reserved))
-    db.close()
-    return {"free_tables": sorted(free_tables)}
+def get_available_tables(
+    reservation_date: str = Query(...),
+    reservation_time: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    all_tables = [f"T{i}" for i in range(1, 14)]
+    reserved = db.query(Reservation.table_id).filter_by(
+        reservation_date=reservation_date,
+        reservation_time=reservation_time
+    ).all()
+
+    reserved_tables = [r.table_id for r in reserved]
+    available = [t for t in all_tables if t not in reserved_tables]
+
+    return {"available_tables": available}
 
 @router.post("/reserve-table")
 def reserve_table(request: Request, table_id: int = Form(...), date: str = Form(...), time: str = Form(...)):

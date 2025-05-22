@@ -198,26 +198,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     else if (act.action === "check_tables") {
-                        const res = await fetch("/available-tables");
+                        if (!act.date || !act.time) {
+                            addMessage("Sistema", "❗ Prašau nurodyti datą ir laiką.", false);
+                            return;
+                        }
+
+                        const url = `/available-tables?reservation_date=${encodeURIComponent(act.date)}&reservation_time=${encodeURIComponent(act.time)}`;
+                        const res = await fetch(url);
                         const data = await res.json();
+
                         const available = data.available_tables;
 
-                        if (available.length === 0) {
+                        if (!available || available.length === 0) {
                             addMessage("Sistema", "Šiuo metu visi staliukai yra užimti.", false);
                         } else {
-                            addMessage("Sistema", `Laisvi staliukai: ${available.join(", ")}`, false);
+                            addMessage("Sistema", `🪑 Laisvi staliukai: ${available.join(", ")}. Kurį norėtumėte rezervuoti?`, false);
                         }
                     }
+
                     else if (act.action === "cancel_reservation") {
-                        const username = getUsernameFromCookie(); // 👇 apibrėšim funkciją apačioje
                         const res = await fetch("/cancel-reservation", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ username: username })
+                            method: "POST"
                         });
                         const data = await res.json();
                         addMessage("Sistema", data.message || "Atsakymo nėra.", false);
+
+                        // Jei yra laisvi staliukai po atšaukimo – parodyk
+                        if (data.available_tables) {
+                            addMessage("Sistema", `🪑 Dabar laisvi: ${data.available_tables.join(", ")}`, false);
+                        }
                     }
+
 
 
                 }
