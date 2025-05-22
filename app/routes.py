@@ -715,7 +715,7 @@ def cancel_reservation(request: Request):
 def my_reservations(username: str = Depends(get_username_from_cookie), db: Session = Depends(get_db)):
     reservations = db.query(Reservation).filter_by(username=username).all()
     result = [
-        {"table_id": res.table_id, "date": res.date.isoformat(), "time": res.time}
+        {"table_id": res.table_id, "date": str(res.date), "time": res.time}
         for res in reservations
     ]
     return {"reservations": result, "username": username}
