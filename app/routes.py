@@ -23,6 +23,15 @@ from app.utils import verify_password
 import secrets
 from itsdangerous import URLSafeSerializer
 from sqlalchemy.orm import joinedload
+from typing import Generator
+
+def get_db() -> Generator:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 
 load_dotenv()
