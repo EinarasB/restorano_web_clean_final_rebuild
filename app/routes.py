@@ -396,22 +396,23 @@ def reserve_page(request: Request):
     db = SessionLocal()
     reservations = db.query(Reservation).all()
     db.close()
-    reserved_tables = [r.table_id for r in reservations]
+    reserved_tables = [str(r.table_id) for r in reservations]
+
 
     table_positions = {
-    1:  {"top": "12%", "left": "16%"},
-    2:  {"top": "37%", "left": "16%"},
-    3:  {"top": "62%", "left": "16%"},
-    4:  {"top": "84.5%", "left": "15%"},
-    5:  {"top": "12%", "left": "37%"},
-    6:  {"top": "82%", "left": "36.5%"},
-    7:  {"top": "8.5%", "left": "58.8%"},
-    8:  {"top": "29.5%", "left": "58.8%"},
-    9:  {"top": "47.5%", "left": "58.8%"},
-    10: {"top": "65.5%", "left": "58.8%"},
-    11: {"top": "36%", "left": "82.5%"},
-    12: {"top": "55.5%", "left": "82.5%"},
-    13: {"top": "84.5%", "left": "85.5%"}
+    "T1":  {"top": "12%", "left": "16%"},
+    "T2":  {"top": "37%", "left": "16%"},
+    "T3":  {"top": "62%", "left": "16%"},
+    "T4":  {"top": "84.5%", "left": "15%"},
+    "T5":  {"top": "12%", "left": "37%"},
+    "T6":  {"top": "82%", "left": "36.5%"},
+    "T7":  {"top": "8.5%", "left": "58.8%"},
+    "T8":  {"top": "29.5%", "left": "58.8%"},
+    "T9":  {"top": "47.5%", "left": "58.8%"},
+    "T10": {"top": "65.5%", "left": "58.8%"},
+    "T11": {"top": "36%", "left": "82.5%"},
+    "T12": {"top": "55.5%", "left": "82.5%"},
+    "T13": {"top": "84.5%", "left": "85.5%"}
 }
 
 
@@ -647,14 +648,15 @@ def order_history_by_date(request: Request, date: str = Path(...)):
 
 @router.get("/available-tables")
 def get_available_tables(
-    reservation_date: str = Query(...),
-    reservation_time: str = Query(...),
+    reservation_date: str = Query(..., alias="date"),
+    reservation_time: str = Query(..., alias="time"),
     db: Session = Depends(get_db)
 ):
     all_tables = [f"T{i}" for i in range(1, 14)]
+
     reserved = db.query(Reservation.table_id).filter_by(
-        reservation_date=reservation_date,
-        reservation_time=reservation_time
+        date=reservation_date,
+        time=reservation_time
     ).all()
 
     reserved_tables = [r.table_id for r in reserved]
@@ -662,28 +664,33 @@ def get_available_tables(
 
     return {"available_tables": available}
 
+
 @router.post("/reserve-table")
 def reserve_table(request: Request, table_id: str = Form(...), date: str = Form(...), time: str = Form(...)):
     username = request.cookies.get("username")
     if not username:
-        return JSONResponse(status_code=401, content={"detail": "Not logged in"})
+        return JSONResponse(status_code=401, content={"detail": "Neprisijungęs"})
 
     db = SessionLocal()
     user = db.query(User).filter_by(username=username).first()
     if not user:
         db.close()
-        return JSONResponse(status_code=404, content={"detail": "User not found"})
+        return JSONResponse(status_code=404, content={"detail": "Vartotojas nerastas"})
 
+    # Patikrinam ar šitas STALIUKAS tuo laiku jau rezervuotas
     existing = db.query(Reservation).filter_by(table_id=table_id, date=date, time=time).first()
     if existing:
         db.close()
-        return JSONResponse(status_code=400, content={"detail": "Table already reserved"})
+        return JSONResponse(status_code=400, content={"detail": "Šis staliukas jau rezervuotas"})
 
+    # Leidžia vartotojui rezervuoti kiek tik nori, bet ne tą patį staliuką vienu metu
     new_res = Reservation(table_id=table_id, date=date, time=time, user_id=user.id, username=username)
     db.add(new_res)
     db.commit()
     db.close()
+
     return {"message": f"✅ Staliukas {table_id} rezervuotas {date} {time}"}
+
 
 
 
