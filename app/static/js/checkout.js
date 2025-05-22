@@ -4,7 +4,7 @@
     const hiddenInput = document.getElementById("order-data");
     const form = document.querySelector("form");
 
-    // Žemėlapis tarp item pavadinimų ir paveikslėlių
+ 
     const imageMap = {
         "Margarita": "pica.jpg",
         "Burgeris": "burger.jpg",
@@ -87,7 +87,7 @@
 
     renderCart();
 });
-// === REKOMENDACIJŲ SISTEMA ===
+
 const allDishes = [
     { name: "Kava", price: 2.49, image: "kava.jpg" },
     { name: "Spurga su šokoladu", price: 5.49, image: "desertas.jpg" },
@@ -109,8 +109,8 @@ function generateRecommendations() {
     const recWrapper = document.getElementById("recommendations");
     if (!recWrapper) return;
 
-    // Logika: rekomenduojame tuos, kurie dar nepasirinkti
-    const suggestions = allDishes.filter(d => !cartNames.includes(d.name)).slice(0, 3); // top 3
+   
+    const suggestions = allDishes.filter(d => !cartNames.includes(d.name)).slice(0, 3);
 
     suggestions.forEach(item => {
         const card = document.createElement("div");
@@ -126,7 +126,7 @@ function generateRecommendations() {
         recWrapper.appendChild(card);
     });
 
-    // Pridedam veikimą "Į krepšelį" mygtukams
+ 
     recWrapper.addEventListener("click", function (e) {
         if (e.target.classList.contains("add-to-cart")) {
             const name = e.target.dataset.name;
@@ -138,10 +138,10 @@ function generateRecommendations() {
                 cartItems.push({ name, price, quantity: 1 });
             }
             localStorage.setItem("cart", JSON.stringify(cartItems));
-            location.reload(); // kad atsinaujintų krepšelis
+            location.reload();
         }
     });
 }
 
-// Paleidžiam po visko
+
 generateRecommendations();

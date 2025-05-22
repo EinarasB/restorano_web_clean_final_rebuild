@@ -29,7 +29,7 @@
 </head>
 <body>
     <div class="container chat-box">
-        <h1>📅 Pokalbis {{ date }}</h1>
+        <h1>Pokalbis {{ date }}</h1>
 
         {% for msg in messages %}
         <div class="message {{ msg.role }}">
@@ -38,7 +38,7 @@
         {% endfor %}
 
         <div style="margin-top: 20px;">
-            <a href="/chat-history" class="btn">🔙 Grįžti į dienų sąrašą</a>
+            <a href="/chat-history" class="btn">Grįžti į dienų sąrašą</a>
         </div>
     </div>
 </body>

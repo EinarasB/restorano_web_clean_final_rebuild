@@ -7,7 +7,7 @@
     const form = document.getElementById("reservation-form");
     const tableInput = document.getElementById("selected-table");
 
-    // Nauji input'ai iš modalo:
+    
     const dateInput = document.getElementById("reservation-date");
     const timeInput = document.getElementById("reservation-time");
     const hiddenDateInput = document.getElementById("reservation-date-hidden");
@@ -32,7 +32,7 @@
             return;
         }
 
-        // Įrašom į paslėptus laukus
+        
         tableInput.value = selectedTable;
         hiddenDateInput.value = selectedDate;
         hiddenTimeInput.value = selectedTime;

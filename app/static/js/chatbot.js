@@ -1,6 +1,6 @@
-﻿// === chatbot.js (AI su veiksmais - patobulinta versija) ===
+﻿
 let pendingAction = null;
-let chatMessages; // 👈 Globaliai, kad veiktų visose funkcijose
+let chatMessages;
 
 const speak = (text) => {
     if ('speechSynthesis' in window) {
@@ -44,7 +44,7 @@ const removeTyping = () => {
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("chat-toggle");
     const chatWidget = document.getElementById("chat-widget");
-    chatMessages = document.getElementById("chat-messages"); // 👈 dabar priskiriam
+    chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("send-btn");
 
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     else if (act.action === "reserve_table") {
                         const formData = new FormData();
-                        formData.append("table_id", act.table_id); // be papildomos "T"
+                        formData.append("table_id", act.table_id);
                         formData.append("date", act.date);
                         formData.append("time", act.time);
 
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const data = await res.json();
                         addMessage("Sistema", data.message || "Atsakymo nėra.", false);
 
-                        // Jei yra laisvi staliukai po atšaukimo – parodyk
+                        
                         if (data.available_tables) {
                             addMessage("Sistema", `🪑 Dabar laisvi: ${data.available_tables.join(", ")}`, false);
                         }
@@ -344,6 +344,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
             const followUp = "Beje, šiandien siūlome Margaritą, Latte kavą ir spurgą. Jei norėsite – galiu pridėti į krepšelį.";
             addMessage("Padavėjas DI", followUp, false);
-        }, 30000); // 30 sekundžių
+        }, 30000);
     }
 });

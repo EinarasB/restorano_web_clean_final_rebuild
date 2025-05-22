@@ -39,9 +39,9 @@ load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY", "").replace("\n", "").strip()
 
 if not openai_api_key:
-    raise ValueError("❌ Nepavyko gauti OpenAI API rakto!")
+    raise ValueError("Nepavyko gauti OpenAI API rakto!")
 
-print("🔐 API KEY:", openai_api_key[:8] + "..." + openai_api_key[-4:])
+print("API KEY:", openai_api_key[:8] + "..." + openai_api_key[-4:])
 
 client = OpenAI(api_key=openai_api_key)
 
@@ -49,7 +49,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 session_memory = defaultdict(list)
 
-# ======== AI CHAT ==========
+
 class ChatRequest(BaseModel):
     message: str
 
@@ -98,7 +98,7 @@ async def chat_endpoint(req: ChatRequest, request: Request):
             )
         }
 
-        # Pokalbio istorija
+        
         messages = [system_prompt]
         if username:
             history = db.query(ChatMessage).filter(ChatMessage.username == username).order_by(ChatMessage.timestamp).all()
@@ -106,10 +106,10 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         else:
             messages += session_memory[ip][-10:]
 
-        # Nauja žinutė
+        
         messages.append({"role": "user", "content": req.message})
 
-        # DI užklausa
+        
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages
@@ -117,7 +117,7 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         content = response.choices[0].message.content.strip()
         print("📩 AI atsakymas:", content)
 
-        # Išsaugojimas
+        
         if username:
             db.add(ChatMessage(username=username, role="user", content=req.message))
             db.add(ChatMessage(username=username, role="assistant", content=content))
@@ -147,7 +147,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-# ======== REGISTRACIJA ==========
+
 @router.get("/register")
 def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
@@ -205,7 +205,7 @@ def register_user(request: Request, username: str = Form(...), email: str = Form
 
 
 
-# ======== AUTH ==========
+
 @router.post("/login")
 def login_user(request: Request, username: str = Form(...), password: str = Form(...)):
     db: Session = SessionLocal()
@@ -232,8 +232,7 @@ def login_form(request: Request):
 
 
 
-# ======== ADMIN ==========
-# ======== ADMIN ==========
+
 
 @router.get("/admin-login")
 def show_admin_login(request: Request):
@@ -263,7 +262,7 @@ def show_admin_panel(request: Request):
     users = db.query(User).all()
     reservations = db.query(Reservation).order_by(Reservation.reserved_at.desc()).all()
 
-    # Pridedame rezervacijų skaičių kiekvienam vartotojui
+    
     for user in users:
         count = db.query(Reservation).filter(Reservation.username == user.username).count()
         user.reservation_count = count
@@ -343,11 +342,11 @@ def update_user(request: Request, user_id: int = Form(...), username: str = Form
     db.close()
     return RedirectResponse("/admin-panel", status_code=302)
 
-# ======== MENU / GUEST ==========
+
 @router.get("/guest")
 def guest_menu(request: Request):
     response = templates.TemplateResponse("menu.html", {"request": request})
-    response.delete_cookie("username")  # Atsijungia
+    response.delete_cookie("username") 
     return response
 
 
@@ -355,7 +354,7 @@ def guest_menu(request: Request):
 def logged_in_menu(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
 
-# ======== CHECKOUT ==========
+
 @router.get("/checkout")
 def checkout_page(request: Request):
     return templates.TemplateResponse("checkout.html", {"request": request})
@@ -389,7 +388,7 @@ def submit_order(request: Request, payment_method: str = Form(...), order_data: 
     finally:
         db.close()
 
-# ======== REZERVACIJA ==========
+
 @router.get("/reserve")
 def reserve_page(request: Request):
     username = request.cookies.get("username")
@@ -440,7 +439,7 @@ def submit_reservation(
     db = SessionLocal()
     user = db.query(User).filter_by(username=username).first()
 
-    # Patikrinam ar tuo laiku jau rezervuota
+    
     existing = db.query(Reservation).filter_by(
         table_id=table_id, date=date, time=time
     ).first()
@@ -471,11 +470,11 @@ def chat_history_dates(request: Request):
         return RedirectResponse("/login", status_code=302)
 
     db = SessionLocal()
-    # Išrenkame unikalių datų sąrašą
+    
     dates = db.query(func.date(ChatMessage.timestamp)).filter(ChatMessage.username == username).distinct().all()
     db.close()
 
-    date_list = [str(date[0]) for date in dates]  # Konvertuojame į string sąrašą
+    date_list = [str(date[0]) for date in dates]
 
     return templates.TemplateResponse("chat_history_dates.html", {
         "request": request,
@@ -501,7 +500,7 @@ def chat_history_by_date(request: Request, date: str = Path(...)):
         "selected_date": date
     })
 
-# Meniu redagavimas ir pridėjimas
+
 @router.get("/admin/edit-menu")
 def show_menu_items(request: Request):
     db: Session = SessionLocal()
@@ -530,7 +529,7 @@ def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: flo
     db.close()
     return RedirectResponse("/admin/edit-menu", status_code=302)
 
-# Rezervacijų redagavimas
+
 @router.get("/admin/edit-reservation/{reservation_id}")
 def edit_reservation_form(request: Request, reservation_id: int = Path(...)):
     db: Session = SessionLocal()
@@ -671,13 +670,13 @@ def reserve_table(request: Request, table_id: str = Form(...), date: str = Form(
         db.close()
         return JSONResponse(status_code=404, content={"detail": "Vartotojas nerastas"})
 
-    # Patikrinam ar šitas STALIUKAS tuo laiku jau rezervuotas
+    
     existing = db.query(Reservation).filter_by(table_id=table_id, date=date, time=time).first()
     if existing:
         db.close()
         return JSONResponse(status_code=400, content={"detail": "Šis staliukas jau rezervuotas"})
 
-    # Leidžia vartotojui rezervuoti kiek tik nori, bet ne tą patį staliuką vienu metu
+    
     new_res = Reservation(table_id=table_id, date=date, time=time, user_id=user.id, username=username)
     db.add(new_res)
     db.commit()
