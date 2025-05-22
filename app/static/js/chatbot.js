@@ -208,6 +208,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
 
+                    else if (act.action === "get_my_reservations") {
+                        const res = await fetch("/my-reservations");
+                        const data = await res.json();
+
+                        if (data.reservations.length === 0) {
+                            addMessage("Sistema", `🔍 Neturi jokių rezervacijų, ${data.username}.`, false);
+                        } else {
+                            const list = data.reservations.map(r => `🪑 ${r.table_id} ${r.date} ${r.time}`).join("<br>");
+                            addMessage("Tavo rezervacijos", list, false);
+                        }
+                    }
 
 
 

@@ -32,7 +32,8 @@ def get_db() -> Generator:
     finally:
         db.close()
 
-
+def get_username_from_cookie(request: Request) -> str:
+    return request.cookies.get("username", "svečias")
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY", "").replace("\n", "").strip()
@@ -91,6 +92,8 @@ async def chat_endpoint(req: ChatRequest, request: Request):
                 "- {\"action\": \"check_tables\", \"date\": \"2025-05-22\", \"time\": \"18:00\" }\n"
                 "Jei nori rezervuoti staliuką, naudok: {\"action\": \"reserve_table\", \"table_id\": \"T5\", \"date\": \"2025-05-22\", \"time\": \"18:00\"}"
                 "- {\"\action\": \"cancel_reservation\" }\n"
+                "Jei nori sužinoti savo rezervacijas, naudok: {\"action\": \"get_my_reservations\"}"
+
 
             )
         }
