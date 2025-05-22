@@ -646,7 +646,7 @@ def order_history_by_date(request: Request, date: str = Path(...)):
         "orders": orders
     })
 
-@app.get("/available-tables")
+@router.get("/available-tables")
 def available_tables(reservation_date: str, reservation_time: str, db: Session = Depends(get_db)):
     reserved = db.query(Reservation.table_id).filter_by(date=reservation_date, time=reservation_time).all()
     reserved_ids = {res[0] for res in reserved}
