@@ -414,24 +414,41 @@ def reserve_page(request: Request):
     })
 
 @router.post("/reserve")
-def submit_reservation(request: Request, table_id: str = Form(...)):
+def submit_reservation(
+    request: Request,
+    table_id: str = Form(...),
+    reservation_date: str = Form(...),
+    reservation_time: str = Form(...)
+):
     username = request.cookies.get("username")
     if not username:
         return RedirectResponse("/login", status_code=302)
 
     db = SessionLocal()
+    user = db.query(User).filter_by(username=username).first()
 
-    # Patikrinam ar jau rezervuota
-    existing = db.query(Reservation).filter(Reservation.table_id == table_id).first()
+    existing = db.query(Reservation).filter_by(
+        table_id=table_id,
+        date=reservation_date,
+        time=reservation_time
+    ).first()
+
     if existing:
         db.close()
         return RedirectResponse("/reserve", status_code=302)
 
-    reservation = Reservation(username=username, table_id=table_id)
+    reservation = Reservation(
+        table_id=table_id,
+        date=reservation_date,
+        time=reservation_time,
+        user_id=user.id,
+        username=username
+    )
     db.add(reservation)
     db.commit()
     db.close()
     return RedirectResponse("/menu", status_code=302)
+
 
 @router.get("/chat-history")
 def chat_history_dates(request: Request):

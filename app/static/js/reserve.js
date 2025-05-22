@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
     const tableButtons = document.querySelectorAll(".table-btn");
     const modal = document.getElementById("modal");
     const modalTable = document.getElementById("modal-table");
@@ -18,12 +18,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     confirmBtn.addEventListener("click", () => {
+        const dateInput = document.getElementById("reservation-date");
+        const timeInput = document.getElementById("reservation-time");
+
+        if (!dateInput.value || !timeInput.value) {
+            alert("❗ Pasirinkite datą ir laiką.");
+            return;
+        }
+
+        document.getElementById("reservation-date-hidden").value = dateInput.value;
+        document.getElementById("reservation-time-hidden").value = timeInput.value;
+
         tableInput.value = selectedTable;
         form.submit();
     });
+
 
     cancelBtn.addEventListener("click", () => {
         modal.style.display = "none";
         selectedTable = "";
     });
+
 });

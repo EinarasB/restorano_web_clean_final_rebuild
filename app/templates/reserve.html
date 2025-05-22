@@ -23,19 +23,29 @@
                         style="top: {{ table_positions[i]['top'] }}; left: {{ table_positions[i]['left'] }};">
                     {{ i }}
                 </button>
-
                 {% endfor %}
             </div>
             <input type="hidden" name="table_id" id="selected-table" />
+            <input type="hidden" name="date" id="reservation-date-hidden" />
+            <input type="hidden" name="time" id="reservation-time-hidden" />
         </form>
 
-        <a href="/menu" class="btn">🔙 Grįžti į meniu</a>
+        <a href="/menu" class="btn">🖙 Grįžti į meniu</a>
     </div>
 
     <!-- Modalas su patvirtinimu -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <p>Ar tikrai norite rezervuoti staliuką <strong id="modal-table"></strong>?</p>
+
+            <div id="datetime-form">
+                <label for="reservation-date">Pasirinkite datą:</label>
+                <input type="date" id="reservation-date" required>
+
+                <label for="reservation-time">Pasirinkite laiką:</label>
+                <input type="time" id="reservation-time" required>
+            </div>
+
             <div class="modal-actions">
                 <button id="confirm-reserve">Taip</button>
                 <button id="cancel-reserve">Ne</button>
