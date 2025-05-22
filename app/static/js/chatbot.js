@@ -174,6 +174,29 @@ document.addEventListener("DOMContentLoaded", function () {
                         offerItems.forEach(name => simulateAdd(name));
                         addMessage("Dienos pasiūlymas", `✅ ĮDĖTA: ${offerItems.join(", ")}`, false);
                     }
+                    else if (act.action === "check_tables") {
+                        const res = await fetch("/available-tables");
+                        const data = await res.json();
+                        const available = data.available_tables;
+
+                        if (available.length === 0) {
+                            addMessage("Sistema", "Šiuo metu visi staliukai yra užimti.", false);
+                        } else {
+                            addMessage("Sistema", `Laisvi staliukai: ${available.join(", ")}`, false);
+                        }
+                    }
+                    else if (act.action === "cancel_reservation") {
+                        const username = getUsernameFromCookie(); // 👇 apibrėšim funkciją apačioje
+                        const res = await fetch("/cancel-reservation", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ username: username })
+                        });
+                        const data = await res.json();
+                        addMessage("Sistema", data.message || "Atsakymo nėra.", false);
+                    }
+
+
                 }
                 return;
             }
@@ -243,6 +266,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const audio = new Audio("/static/sounds/relax-message-tone.mp3");
         audio.play().catch(e => console.warn("🎵 Nepavyko paleisti garso:", e));
     }
+
+    function getUsernameFromCookie() {
+        const match = document.cookie.match(/username=([^;]+)/);
+        return match ? match[1] : "";
+    }
+
 
     if (!sessionStorage.getItem("ai-greeted")) {
         sessionStorage.setItem("ai-greeted", "true");

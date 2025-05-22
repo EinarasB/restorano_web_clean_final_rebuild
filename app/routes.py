@@ -611,3 +611,33 @@ def order_history_by_date(request: Request, date: str = Path(...)):
         "selected_date": date,
         "orders": orders
     })
+
+@router.get("/available-tables")
+def get_available_tables():
+    db = SessionLocal()
+    reserved = db.query(Reservation.table_id).all()
+    db.close()
+    reserved_ids = [r[0] for r in reserved]
+    all_tables = list(range(1, 14))  # staliukai 1–13
+    available = [t for t in all_tables if t not in reserved_ids]
+    return {"available_tables": available}
+
+
+@router.post("/cancel-reservation")
+def cancel_reservation(data: dict):
+    username = data.get("username")
+    db = SessionLocal()
+    user = db.query(User).filter_by(username=username).first()
+    if not user:
+        db.close()
+        return {"status": "error", "message": "Naudotojas nerastas"}
+
+    reservation = db.query(Reservation).filter_by(user_id=user.id).first()
+    if reservation:
+        db.delete(reservation)
+        db.commit()
+        db.close()
+        return {"status": "success", "message": "✅ Rezervacija sėkmingai atšaukta"}
+    db.close()
+    return {"status": "error", "message": "🔍 Rezervacija nerasta"}
+
