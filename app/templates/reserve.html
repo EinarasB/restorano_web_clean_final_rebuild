@@ -20,7 +20,7 @@
                         class="table-btn {% if 'T' ~ i in reserved_tables %}reserved{% endif %}"
                         data-table="T{{ i }}"
                         {% if 'T' ~ i in reserved_tables %}disabled{% endif %}
-                        style="top: {{ table_positions[i]['top'] }}; left: {{ table_positions[i]['left'] }};">
+                        style="top: {{ table_positions['T' ~ i].top }}; left: {{ table_positions['T' ~ i].left }};">
                     {{ i }}
                 </button>
                 {% endfor %}
