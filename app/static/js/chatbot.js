@@ -174,6 +174,29 @@ document.addEventListener("DOMContentLoaded", function () {
                         offerItems.forEach(name => simulateAdd(name));
                         addMessage("Dienos pasiūlymas", `✅ ĮDĖTA: ${offerItems.join(", ")}`, false);
                     }
+
+                    else if (act.action === "reserve_table") {
+                        const formData = new FormData();
+                        formData.append("table_id", act.table_id);
+                        formData.append("date", act.date);
+                        formData.append("time", act.time);
+
+                        fetch("/reserve-table", {
+                            method: "POST",
+                            body: formData
+                        }).then(res => res.json())
+                            .then(data => {
+                                if (data.message) {
+                                    addMessage("Sistema", data.message, false);
+                                } else {
+                                    addMessage("Sistema", "❌ Klaida rezervuojant: " + data.detail, false);
+                                }
+                            }).catch(err => {
+                                addMessage("Sistema", "⚠️ Nepavyko atlikti užklausos", false);
+                            });
+                    }
+
+
                     else if (act.action === "check_tables") {
                         const res = await fetch("/available-tables");
                         const data = await res.json();

@@ -73,12 +73,16 @@ async def chat_endpoint(req: ChatRequest, request: Request):
     "- Latte kava: €2.49\n"
     "- Coca-Cola: €2.99\n"
     "- Žalioji arbata: €1.49\n\n"
-                "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
-                "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., "
-                "'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: "
-                "'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
-                "Jei vartotojas klausia apie laisvus staliukus, grąžink veiksmą: {\"action\": \"check_tables\" }."
-                "Jei nori atšaukti rezervaciją, naudok: {\"action\": \"cancel_reservation\" }."
+    "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
+    "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., "
+    "'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: "
+    "'Ar norėtumėte pridėti juos į krepšelį?'. Tik jei klientas sutinka – siųsk JSON {\"action\": \"daily_offer\"}."
+    "Jei vartotojas klausia apie laisvus staliukus, grąžink veiksmą: {\"action\": \"check_tables\" }."
+    "Jei nori atšaukti rezervaciją, naudok: {\"action\": \"cancel_reservation\" }."
+                "- {\"action\": \"check_tables\", \"date\": \"2025-05-22\", \"time\": \"18:00\" }\n"
+                "- {\"action\": \"reserve_table\", \"table_id\": 5, \"date\": \"2025-05-22\", \"time\": \"18:00\" }\n"
+                "- {\"\action\": \"cancel_reservation\" }\n"
+
             )
         }
 
@@ -615,31 +619,60 @@ def order_history_by_date(request: Request, date: str = Path(...)):
     })
 
 @router.get("/available-tables")
-def get_available_tables():
+def available_tables(date: str, time: str):
     db = SessionLocal()
-    reserved = db.query(Reservation.table_id).all()
+    reservations = db.query(Reservation).filter_by(date=date, time=time).all()
+    reserved = [r.table_id for r in reservations]
+    all_tables = set(range(1, 14))  # jei 13 staliukų
+    free_tables = list(all_tables - set(reserved))
     db.close()
-    reserved_ids = [r[0] for r in reserved]
-    all_tables = list(range(1, 14))  # staliukai 1–13
-    available = [t for t in all_tables if t not in reserved_ids]
-    return {"available_tables": available}
+    return {"free_tables": sorted(free_tables)}
 
+@router.post("/reserve-table")
+def reserve_table(request: Request, table_id: int = Form(...), date: str = Form(...), time: str = Form(...)):
+    username = request.cookies.get("username")
+    if not username:
+        return JSONResponse(status_code=401, content={"detail": "Not logged in"})
 
-@router.post("/cancel-reservation")
-def cancel_reservation(data: dict):
-    username = data.get("username")
     db = SessionLocal()
     user = db.query(User).filter_by(username=username).first()
     if not user:
         db.close()
-        return {"status": "error", "message": "Naudotojas nerastas"}
+        return JSONResponse(status_code=404, content={"detail": "User not found"})
+
+    existing = db.query(Reservation).filter_by(table_id=table_id, date=date, time=time).first()
+    if existing:
+        db.close()
+        return JSONResponse(status_code=400, content={"detail": "Table already reserved"})
+
+    new_res = Reservation(table_id=table_id, date=date, time=time, user_id=user.id)
+    db.add(new_res)
+    db.commit()
+    db.close()
+    return {"message": f"✅ Staliukas {table_id} rezervuotas {date} {time}"}
+
+
+
+@router.post("/cancel-reservation")
+def cancel_reservation(request: Request):
+    username = request.cookies.get("username")
+    if not username:
+        return JSONResponse(status_code=401, content={"detail": "Neprisijungęs"})
+
+    db = SessionLocal()
+    user = db.query(User).filter_by(username=username).first()
+    if not user:
+        db.close()
+        return JSONResponse(status_code=404, content={"detail": "Vartotojas nerastas"})
 
     reservation = db.query(Reservation).filter_by(user_id=user.id).first()
     if reservation:
         db.delete(reservation)
         db.commit()
         db.close()
-        return {"status": "success", "message": "✅ Rezervacija sėkmingai atšaukta"}
-    db.close()
-    return {"status": "error", "message": "🔍 Rezervacija nerasta"}
+        return {"message": "✅ Rezervacija atšaukta"}
+    else:
+        db.close()
+        return JSONResponse(status_code=404, content={"detail": "Rezervacija nerasta"})
+
 
