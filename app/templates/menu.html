@@ -48,10 +48,16 @@
         </div>
 
 
+        {% set category_names = {
+        'karstieji': 'Karštieji patiekalai',
+        'salotos': 'Salotos',
+        'desertai': 'Desertai',
+        'gerimai': 'Gėrimai'
+        } %}
 
-        <h2 id="karstieji">Karštieji patiekalai</h2>
+
         {% for category in ['karstieji', 'salotos', 'desertai', 'gerimai'] %}
-        <h2 id="{{ category }}">{{ category|capitalize }} patiekalai</h2>
+        <h2 id="{{ category }}">{{ category_names[category] }}</h2>
         <div class="menu-grid">
             {% for item in items if item.category == category %}
             <div class="menu-card">
