@@ -61,7 +61,7 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         db = SessionLocal()
 
         menu_items = db.query(MenuItem).all()
-menu_description = "\n".join([f"- {item.name}: €{item.price:.2f}" for item in menu_items])
+        menu_description = "\n".join([f"- {item.name}: €{item.price:.2f}" for item in menu_items])
 
         system_prompt = {
             "role": "system",
@@ -74,18 +74,7 @@ menu_description = "\n".join([f"- {item.name}: €{item.price:.2f}" for item in 
                 "- {\"action\": \"get_total\"}\n"
                 "- {\"action\": \"filter_price\", \"max_price\": 5.00}\n"
                 "- {\"action\": \"daily_offer\"}\n\n"
-                 "Galimi patiekalai ir jų kainos:\n"
-    "- Margarita: €7.99\n"
-    "- Burgeris: €8.49\n"
-    "- Vištienos sriuba: €4.99\n"
-    "- Makaronai su vištiena: €9.49\n"
-    "- Jautienos kepsnys: €13.99\n"
-    "- Cezario salotos: €6.49\n"
-    "- Spurga su šokoladu: €5.49\n"
-    "- Blyneliai: €4.99\n"
-    "- Latte kava: €2.49\n"
-    "- Coca-Cola: €2.99\n"
-    "- Žalioji arbata: €1.49\n\n"
+                 "Galimi patiekalai ir jų kainos:\n{menu_description}\n\n"
     "Nefantazuok. Kainos yra tokios, kaip HTML meniu. Jeigu klausimas paprastas – atsakyk tekstu.\n"
     "Jei klientas klausia apie dienos pasiūlymą – trumpai apibūdink jį žodžiais, pvz., "
     "'Šiandien siūlome Margaritą, Latte kavą ir spurgą'. Tada paklausk: "
