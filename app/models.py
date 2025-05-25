@@ -70,3 +70,5 @@ class MenuItem(Base):
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     description = Column(Text)
+    category = Column(String)
+    image_url = Column(String)
