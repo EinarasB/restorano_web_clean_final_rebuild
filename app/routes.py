@@ -352,7 +352,11 @@ def guest_menu(request: Request):
 
 @router.get("/menu")
 def logged_in_menu(request: Request):
-    return templates.TemplateResponse("menu.html", {"request": request})
+    db = SessionLocal()
+    items = db.query(MenuItem).all()
+    db.close()
+    return templates.TemplateResponse("menu.html", {"request": request, "items": items})
+
 
 
 @router.get("/checkout")

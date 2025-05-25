@@ -39,7 +39,7 @@
         <h1>Restorano Meniu</h1>
 
 
-        
+
         <div class="category-nav">
             <a href="#karstieji">🍽️ Karštieji</a>
             <a href="#salotos">🥗 Salotos</a>
@@ -48,124 +48,24 @@
         </div>
 
 
-        
+
         <h2 id="karstieji">Karštieji patiekalai</h2>
+        {% for category in ['karstieji', 'salotos', 'desertai', 'gerimai'] %}
+        <h2 id="{{ category }}">{{ category|capitalize }} patiekalai</h2>
         <div class="menu-grid">
+            {% for item in items if item.category == category %}
             <div class="menu-card">
-                <img src="/static/images/pica.jpg" alt="Pica">
+                <img src="{{ item.image_url or '/static/images/default.jpg' }}" alt="{{ item.name }}">
                 <div class="menu-info">
-                    <h3>Margarita</h3>
-                    <p>Pomidorai, mocarela, bazilikas</p>
-                    <span class="price">€7.99</span>
-                    <button class="add-to-cart" data-name="Margarita" data-price="7.99">Į krepšelį</button>
+                    <h3>{{ item.name }}</h3>
+                    <p>{{ item.description }}</p>
+                    <span class="price">€{{ '%.2f'|format(item.price) }}</span>
+                    <button class="add-to-cart" data-name="{{ item.name }}" data-price="{{ item.price }}">Į krepšelį</button>
                 </div>
             </div>
-            <div class="menu-card">
-                <img src="/static/images/burger.jpg" alt="Burgeris">
-                <div class="menu-info">
-                    <h3>Burgeris</h3>
-                    <p>Jautiena, sūris, padažas, salotos</p>
-                    <span class="price">€8.49</span>
-                    <button class="add-to-cart" data-name="Burgeris" data-price="8.49">Į krepšelį</button>
-                </div>
-            </div>
-            <div class="menu-card">
-                <img src="/static/images/sriuba.jpg" alt="Sriuba">
-                <div class="menu-info">
-                    <h3>Vištienos sriuba</h3>
-                    <p>Lengva, švelni, karšta</p>
-                    <span class="price">€4.99</span>
-                    <button class="add-to-cart" data-name="Vištienos sriuba" data-price="4.99">Į krepšelį</button>
-                </div>
-            </div>
-            <div class="menu-card">
-                <img src="/static/images/pasta.jpg" alt="Makaronai">
-                <div class="menu-info">
-                    <h3>Makaronai su vištiena</h3>
-                    <p>Kremiškas padažas, vištiena, sūris</p>
-                    <span class="price">€9.49</span>
-                    <button class="add-to-cart" data-name="Makaronai su vištiena" data-price="9.49">Į krepšelį</button>
-                </div>
-            </div>
-            <div class="menu-card">
-                <img src="/static/images/kepsnys.jpg" alt="Kepsnys">
-                <div class="menu-info">
-                    <h3>Jautienos kepsnys</h3>
-                    <p>Grilyje keptas kepsnys su bulvėmis</p>
-                    <span class="price">€13.99</span>
-                    <button class="add-to-cart" data-name="Jautienos kepsnys" data-price="13.99">Į krepšelį</button>
-                </div>
-            </div>
+            {% endfor %}
         </div>
-
-        
-        <h2 id="salotos">Salotos</h2>
-        <div class="menu-grid">
-            <div class="menu-card">
-                <img src="/static/images/salotos.jpg" alt="Salotos">
-                <div class="menu-info">
-                    <h3>Cezario salotos</h3>
-                    <p>Vištiena, salotos, parmezanas, krutonai</p>
-                    <span class="price">€6.49</span>
-                    <button class="add-to-cart" data-name="Cezario salotos" data-price="6.49">Į krepšelį</button>
-                </div>
-            </div>
-        </div>
-
-        
-        <h2 id="desertai">Desertai</h2>
-        <div class="menu-grid">
-            <div class="menu-card">
-                <img src="/static/images/desertas.jpg" alt="Desertas">
-                <div class="menu-info">
-                    <h3>Spurga su šokoladu</h3>
-                    <p>Šokolado glajus ir saldainiukai</p>
-                    <span class="price">€5.49</span>
-                    <button class="add-to-cart" data-name="Spurga su šokoladu" data-price="5.49">Į krepšelį</button>
-                </div>
-            </div>
-            <div class="menu-card">
-                <img src="/static/images/pankekai.jpg" alt="Blynai">
-                <div class="menu-info">
-                    <h3>Blyneliai</h3>
-                    <p>Su medumi ir mėlynėmis</p>
-                    <span class="price">€4.99</span>
-                    <button class="add-to-cart" data-name="Blyneliai" data-price="4.99">Į krepšelį</button>
-                </div>
-            </div>
-        </div>
-
-        
-        <h2 id="gerimai">Gėrimai</h2>
-        <div class="menu-grid">
-            <div class="menu-card">
-                <img src="/static/images/kava.jpg" alt="Kava">
-                <div class="menu-info">
-                    <h3>Latte kava</h3>
-                    <p>Karšta, su pieno puta</p>
-                    <span class="price">€2.49</span>
-                    <button class="add-to-cart" data-name="Latte kava" data-price="2.49">Į krepšelį</button>
-                </div>
-            </div>
-            <div class="menu-card">
-                <img src="/static/images/cola.jpg" alt="Cola">
-                <div class="menu-info">
-                    <h3>Coca-Cola</h3>
-                    <p>Šalta, gazuota, klasikinė</p>
-                    <span class="price">€1.99</span>
-                    <button class="add-to-cart" data-name="Coca-Cola" data-price="1.99">Į krepšelį</button>
-                </div>
-            </div>
-            <div class="menu-card">
-                <img src="/static/images/arbata.jpg" alt="Arbata">
-                <div class="menu-info">
-                    <h3>Žalioji arbata</h3>
-                    <p>Lengva, žolelių, sveika</p>
-                    <span class="price">€1.49</span>
-                    <button class="add-to-cart" data-name="Žalioji arbata" data-price="1.49">Į krepšelį</button>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
 
         <div class="button-group">
             <a href="/" class="btn">Grįžti į pradžią</a>
