@@ -60,6 +60,9 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         ip = request.client.host
         db = SessionLocal()
 
+        menu_items = db.query(MenuItem).all()
+menu_description = "\n".join([f"- {item.name}: €{item.price:.2f}" for item in menu_items])
+
         system_prompt = {
             "role": "system",
             "content": (
