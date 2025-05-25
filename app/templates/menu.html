@@ -14,9 +14,10 @@
     </div>
     
     <div class="top-buttons">
-        {% if request.cookies.get("username") %}
-        <a href="/logout" class="logout-btn">🚪 Atsijungti</a>
+        {% if username %}
+        <a href="/logout" class="logout-btn">Atsijungti</a>
         {% endif %}
+
         <a href="/checkout" class="cart">
             🛒 Krepšelis: <span id="cart-count">0</span>
         </a>
@@ -24,16 +25,17 @@
 
     <div class="menu-wrapper">
 
-        {% if request.cookies.get("username") and request.cookies.get("username") != 'guest' %}
+        {% if username %}
         <div class="reservation-box">
             <p class="welcome-text" style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">
-                Prisijungęs kaip: <strong>{{ request.cookies.get("username") }}</strong>
+                Prisijungęs kaip: <strong>{{ username }}</strong>
             </p>
             <a href="/reserve" class="btn">📅 Rezervuoti staliuką</a>
             <a href="/chat-history" class="btn chat-history-btn">🕛 Pokalbio istorija</a>
             <a href="/order-history" class="btn">📦 Užsakymų istorija</a>
         </div>
         {% endif %}
+
 
 
         <h1>Restorano Meniu</h1>

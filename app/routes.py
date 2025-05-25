@@ -348,12 +348,14 @@ def guest_menu(request: Request):
     db = SessionLocal()
     items = db.query(MenuItem).all()
     db.close()
-
-    response = templates.TemplateResponse("menu.html", {"request": request, "items": items})
+    response = templates.TemplateResponse("menu.html", {
+        "request": request,
+        "items": items,
+        "username": None
+    })
     response.delete_cookie("username")
     return response
- 
-    
+
 
 
 @router.get("/menu")
@@ -361,7 +363,13 @@ def logged_in_menu(request: Request):
     db = SessionLocal()
     items = db.query(MenuItem).all()
     db.close()
-    return templates.TemplateResponse("menu.html", {"request": request, "items": items})
+    username = request.cookies.get("username")
+    return templates.TemplateResponse("menu.html", {
+        "request": request,
+        "items": items,
+        "username": username
+    })
+
 
 
 
