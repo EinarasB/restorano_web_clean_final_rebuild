@@ -557,7 +557,13 @@ def delete_menu_item(item_id: int = Form(...)):
 
 
 @router.post("/admin/update-menu-item")
-def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: float = Form(...), description: str = Form(...)):
+def update_menu_item(
+    item_id: int = Form(...),
+    name: str = Form(...),
+    price: float = Form(...),
+    description: str = Form(...),
+    category: str = Form(...)
+):
     db: Session = SessionLocal()
     item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
     if item:
@@ -568,6 +574,7 @@ def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: flo
         db.commit()
     db.close()
     return RedirectResponse("/admin/edit-menu", status_code=302)
+
 
 
 @router.get("/admin/edit-reservation/{reservation_id}")
