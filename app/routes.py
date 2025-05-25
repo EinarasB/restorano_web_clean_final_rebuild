@@ -547,6 +547,14 @@ def add_menu_item(
     db.close()
     return RedirectResponse("/admin/edit-menu", status_code=302)
 
+@router.post("/admin/delete-menu-item")
+def delete_menu_item(item_id: int = Form(...)):
+    db = SessionLocal()
+    db.query(MenuItem).filter(MenuItem.id == item_id).delete()
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin/edit-menu", status_code=302)
+
 
 @router.post("/admin/update-menu-item")
 def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: float = Form(...), description: str = Form(...)):

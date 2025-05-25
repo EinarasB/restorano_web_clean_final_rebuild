@@ -92,14 +92,20 @@
                     <td><input class="form-control" type="text" name="description" value="{{ item.description }}"></td>
                     <td>
                         <select class="form-control" name="category">
-                            <option value="karstieji" {% if item.category == 'karstieji' %}selected{% endif %}>Karštieji</option>
-                            <option value="salotos" {% if item.category == 'salotos' %}selected{% endif %}>Salotos</option>
-                            <option value="desertai" {% if item.category == 'desertai' %}selected{% endif %}>Desertai</option>
-                            <option value="gerimai" {% if item.category == 'gerimai' %}selected{% endif %}>Gėrimai</option>
+                            <option value="karstieji" {% if item.category= ='karstieji' %}selected{% endif %}>Karštieji</option>
+                            <option value="salotos" {% if item.category= ='salotos' %}selected{% endif %}>Salotos</option>
+                            <option value="desertai" {% if item.category= ='desertai' %}selected{% endif %}>Desertai</option>
+                            <option value="gerimai" {% if item.category= ='gerimai' %}selected{% endif %}>Gėrimai</option>
                         </select>
                     </td>
                     <td><button class="btn" type="submit">Išsaugoti</button></td>
                     </form>
+                    <td>
+                        <form method="post" action="/admin/delete-menu-item" style="display:inline;">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button class="btn btn-danger" type="submit" onclick="return confirm('Ar tikrai norite ištrinti šį patiekalą?')">❌ Pašalinti</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -122,10 +128,12 @@
             <button type="submit">➕ Pridėti</button>
         </form>
 
-        <a href="/admin-panel" class="btn">Grįžti atgal</a>
-        <form method="post" action="/admin/import-html-menu">
-            <button class="btn" type="submit">Siųsti meniu į DB</button>
-        </form>
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <a href="/admin-panel" class="btn btn-danger">Grįžti atgal</a>
+            <form method="post" action="/admin/import-html-menu">
+                <button class="btn btn-success" type="submit">Siųsti meniu į DB</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
