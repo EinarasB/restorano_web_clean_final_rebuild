@@ -92,10 +92,10 @@
                     <td><input class="form-control" type="text" name="description" value="{{ item.description }}"></td>
                     <td>
                         <select class="form-control" name="category">
-                            <option value="karstieji" {% if item.category == 'karstieji' %}selected{% endif %}>Karštieji</option>
-                            <option value="salotos" {% if item.category == 'salotos' %}selected{% endif %}>Salotos</option>
-                            <option value="desertai" {% if item.category == 'desertai' %}selected{% endif %}>Desertai</option>
-                            <option value="gerimai" {% if item.category == 'gerimai' %}selected{% endif %}>Gėrimai</option>
+                            <option value="karstieji" {% if item.category= ='karstieji' %}selected{% endif %}>Karštieji</option>
+                            <option value="salotos" {% if item.category= ='salotos' %}selected{% endif %}>Salotos</option>
+                            <option value="desertai" {% if item.category= ='desertai' %}selected{% endif %}>Desertai</option>
+                            <option value="gerimai" {% if item.category= ='gerimai' %}selected{% endif %}>Gėrimai</option>
                         </select>
                     </td>
                     <td><button class="btn" type="submit">Išsaugoti</button></td>
@@ -107,18 +107,21 @@
 
         <h2>Pridėti naują patiekalą</h2>
         <form method="post" action="/admin/add-menu-item">
-            <input class="form-control" type="text" name="name" placeholder="Pavadinimas" required>
-            <input class="form-control" type="number" step="0.01" name="price" placeholder="Kaina" required>
-            <input class="form-control" type="text" name="description" placeholder="Aprašymas" required>
-            <input class="form-control" type="text" name="image_url" placeholder="Nuotraukos URL">
-            <select class="form-control" name="category">
+            <input type="text" name="name" placeholder="Pavadinimas" required>
+            <input type="text" name="description" placeholder="Aprašymas" required>
+            <input type="number" step="0.01" name="price" placeholder="Kaina (€)" required>
+
+            <select name="category" required>
                 <option value="karstieji">Karštieji</option>
                 <option value="salotos">Salotos</option>
                 <option value="desertai">Desertai</option>
                 <option value="gerimai">Gėrimai</option>
             </select>
-            <button class="btn" type="submit">Pridėti</button>
+
+            <input type="text" name="image_url" placeholder="Paveikslėlio URL (neprivaloma)">
+            <button type="submit">➕ Pridėti</button>
         </form>
+
         <a href="/admin-panel" class="btn">Grįžti atgal</a>
         <form method="post" action="/admin/import-html-menu">
             <button class="btn" type="submit">Siųsti meniu į DB</button>

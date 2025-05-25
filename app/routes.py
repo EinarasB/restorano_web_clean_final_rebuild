@@ -527,13 +527,26 @@ def show_menu_items(request: Request):
     return templates.TemplateResponse("edit_menu.html", {"request": request, "items": items})
 
 @router.post("/admin/add-menu-item")
-def add_menu_item(name: str = Form(...), price: float = Form(...), description: str = Form(...)):
+def add_menu_item(
+    name: str = Form(...),
+    price: float = Form(...),
+    description: str = Form(...),
+    category: str = Form(...),
+    image_url: str = Form(None)
+):
     db: Session = SessionLocal()
-    new_item = MenuItem(name=name, price=price, description=description)
+    new_item = MenuItem(
+        name=name,
+        price=price,
+        description=description,
+        category=category,
+        image_url=image_url or "/static/images/default.jpg"
+    )
     db.add(new_item)
     db.commit()
     db.close()
     return RedirectResponse("/admin/edit-menu", status_code=302)
+
 
 @router.post("/admin/update-menu-item")
 def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: float = Form(...), description: str = Form(...)):
