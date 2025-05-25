@@ -42,8 +42,14 @@
                 {{ msg.role }}:
                 {% endif %}
             </strong>
+            {% if msg.role == 'assistant' and msg.content.startswith('{') and '"action": "add_to_cart"' in msg.content %}
+            Įdėta.
+            {% else %}
+            {{ msg.content }}
+            {% endif %}
         </div>
         {% endfor %}
+
 
         <div style="margin-top: 20px;">
             <a href="/chat-history" class="btn">Grįžti į dienų sąrašą</a>
