@@ -33,7 +33,15 @@
 
         {% for msg in messages %}
         <div class="message {{ msg.role }}">
-            <strong>{{ msg.role.capitalize() }}:</strong> {{ msg.content }}
+            <strong>
+                {% if msg.role == 'user' %}
+                Vartotojas:
+                {% elif msg.role == 'assistant' %}
+                PadavėjasDI:
+                {% else %}
+                {{ msg.role }}:
+                {% endif %}
+            </strong>
         </div>
         {% endfor %}
 

@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 800);
 
         setTimeout(() => {
-            const followUp = "Beje, šiandien siūlome Margaritą, Latte kavą ir spurgą. Jei norėsite – galiu pridėti į krepšelį.";
+            const followUp = "Beje, šiandien siūlome Margaritą, Latte kavą ir spurgą. Jei norėsite – sakykit!";
             addMessage("Padavėjas DI", followUp, false);
         }, 30000);
     }
