@@ -42,13 +42,38 @@
                 {{ msg.role }}:
                 {% endif %}
             </strong>
-            {% if msg.role == 'assistant' and msg.content.startswith('{') and '"action": "add_to_cart"' in msg.content %}
-            Įdėta.
+
+            {% set c = msg.content %}
+            {% if msg.role == 'assistant' and c.startswith('{') %}
+            {% if '"action": "add_to_cart"' in c %}
+            Įdėta į krepšelį.
+            {% elif '"action": "remove_from_cart"' in c %}
+            Pašalinta iš krepšelio.
+            {% elif '"action": "get_cart"' in c %}
+            Rodomas jūsų krepšelis.
+            {% elif '"action": "get_total"' in c %}
+            Skaičiuojama bendra suma.
+            {% elif '"action": "filter_price"' in c %}
+            Filtruojama pagal kainą.
+            {% elif '"action": "daily_offer"' in c %}
+            Dienos pasiūlymas pritaikytas.
+            {% elif '"action": "check_tables"' in c %}
+            Tikrinami laisvi staliukai.
+            {% elif '"action": "reserve_table"' in c %}
+            Staliukas rezervuotas.
+            {% elif '"action": "cancel_reservation"' in c %}
+            Rezervacija atšaukta.
+            {% elif '"action": "get_my_reservations"' in c %}
+            Rodomos jūsų rezervacijos.
+            {% else %}
+            (Veiksmas atpažintas, bet neapdorotas.)
+            {% endif %}
             {% else %}
             {{ msg.content }}
             {% endif %}
         </div>
         {% endfor %}
+
 
 
         <div style="margin-top: 20px;">
