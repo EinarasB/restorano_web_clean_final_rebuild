@@ -92,10 +92,10 @@
                     <td><input class="form-control" type="text" name="description" value="{{ item.description }}"></td>
                     <td>
                         <select class="form-control" name="category">
-                            <option value="karstieji" {% if item.category == 'karstieji' %}selected{% endif %}>Karštieji</option>
-                            <option value="salotos" {% if item.category == 'salotos' %}selected{% endif %}>Salotos</option>
-                            <option value="desertai" {% if item.category == 'desertai' %}selected{% endif %}>Desertai</option>
-                            <option value="gerimai" {% if item.category == 'gerimai' %}selected{% endif %}>Gėrimai</option>
+                            <option value="karstieji" {% if item.category= ='karstieji' %}selected{% endif %}>Karštieji</option>
+                            <option value="salotos" {% if item.category= ='salotos' %}selected{% endif %}>Salotos</option>
+                            <option value="desertai" {% if item.category= ='desertai' %}selected{% endif %}>Desertai</option>
+                            <option value="gerimai" {% if item.category= ='gerimai' %}selected{% endif %}>Gėrimai</option>
                         </select>
                     </td>
                     <td><button class="btn" type="submit">Išsaugoti</button></td>
@@ -119,7 +119,10 @@
             </select>
             <button class="btn" type="submit">Pridėti</button>
         </form>
-        <a href="/admin-panel" class="btn">Grįžti į pradžią</a>
+        <a href="/admin-panel" class="btn">Grįžti atgal</a>
+        <form method="post" action="/admin/import-html-menu">
+            <button class="btn" type="submit">Siųsti meniu į DB</button>
+        </form>
     </div>
 </body>
 </html>

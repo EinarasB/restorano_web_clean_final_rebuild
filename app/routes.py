@@ -719,3 +719,29 @@ def my_reservations(username: str = Depends(get_username_from_cookie), db: Sessi
     ]
     return {"reservations": result, "username": username}
 
+@router.post("/admin/import-html-menu")
+def import_static_menu_to_db():
+    db = SessionLocal()
+
+    static_items = [
+        {"name": "Margarita", "price": 7.99, "description": "Pomidorai, mocarela, bazilikas", "category": "karstieji", "image_url": "/static/images/pica.jpg"},
+        {"name": "Burgeris", "price": 8.49, "description": "Jautiena, sūris, padažas, salotos", "category": "karstieji", "image_url": "/static/images/burger.jpg"},
+        {"name": "Vištienos sriuba", "price": 4.99, "description": "Lengva, švelni, karšta", "category": "karstieji", "image_url": "/static/images/sriuba.jpg"},
+        {"name": "Makaronai su vištiena", "price": 9.49, "description": "Kremiškas padažas, vištiena, sūris", "category": "karstieji", "image_url": "/static/images/pasta.jpg"},
+        {"name": "Jautienos kepsnys", "price": 13.99, "description": "Grilyje keptas kepsnys su bulvėmis", "category": "karstieji", "image_url": "/static/images/kepsnys.jpg"},
+        {"name": "Cezario salotos", "price": 6.49, "description": "Vištiena, salotos, parmezanas, krutonai", "category": "salotos", "image_url": "/static/images/salotos.jpg"},
+        {"name": "Spurga su šokoladu", "price": 5.49, "description": "Šokolado glajus ir saldainiukai", "category": "desertai", "image_url": "/static/images/desertas.jpg"},
+        {"name": "Blyneliai", "price": 4.99, "description": "Su medumi ir mėlynėmis", "category": "desertai", "image_url": "/static/images/pankekai.jpg"},
+        {"name": "Latte kava", "price": 2.49, "description": "Karšta, su pieno puta", "category": "gerimai", "image_url": "/static/images/kava.jpg"},
+        {"name": "Coca-Cola", "price": 1.99, "description": "Šalta, gazuota, klasikinė", "category": "gerimai", "image_url": "/static/images/cola.jpg"},
+        {"name": "Žalioji arbata", "price": 1.49, "description": "Lengva, žolelių, sveika", "category": "gerimai", "image_url": "/static/images/arbata.jpg"},
+    ]
+
+    for item in static_items:
+        exists = db.query(MenuItem).filter(MenuItem.name == item["name"]).first()
+        if not exists:
+            db.add(MenuItem(**item))
+
+    db.commit()
+    db.close()
+    return RedirectResponse("/admin/edit-menu", status_code=302)
