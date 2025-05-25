@@ -345,11 +345,14 @@ def update_user(request: Request, user_id: int = Form(...), username: str = Form
 
 @router.get("/guest")
 def guest_menu(request: Request):
-    db = SessionalLocal()
+    db = SessionLocal()
     items = db.query(MenuItem).all()
     db.close()
-    return templates.TemplateResponse("menu.html", {"request": request, "items": items})
-    response.delete_cookie("username") 
+
+    response = templates.TemplateResponse("menu.html", {"request": request, "items": items})
+    response.delete_cookie("username")
+    return response
+ 
     
 
 
