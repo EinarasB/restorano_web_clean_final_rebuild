@@ -564,6 +564,7 @@ def update_menu_item(item_id: int = Form(...), name: str = Form(...), price: flo
         item.name = name
         item.price = price
         item.description = description
+        item.category = category
         db.commit()
     db.close()
     return RedirectResponse("/admin/edit-menu", status_code=302)
