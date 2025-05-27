@@ -187,7 +187,7 @@
 
     renderCart();
     generateRecommendations();
-});
+;
 
 function generateRecommendations() {
     const allDishes = [
