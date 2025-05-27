@@ -137,7 +137,7 @@
         localStorage.removeItem("cart");
         cart = [];
         renderCart();
-        window.location.href = "/checkout_success.html";
+        window.location.href = "/checkout_success";
     });
 
     customizeForm.addEventListener("submit", (e) => {
