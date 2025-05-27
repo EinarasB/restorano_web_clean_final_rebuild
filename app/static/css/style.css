@@ -797,3 +797,23 @@ button.reserved {
         font-size: 16px;
         margin: 4px 0;
     }
+
+.top-buttons a,
+.leftbutonas a {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-right: 8px;
+}
+
+@media (max-width: 600px) {
+    .top-buttons, .leftbutonas {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+        .top-buttons a,
+        .leftbutonas a {
+            width: 100%;
+            text-align: center;
+        }
+}
