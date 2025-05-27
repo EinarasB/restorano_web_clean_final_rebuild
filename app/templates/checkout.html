@@ -12,8 +12,21 @@
     <div class="menu-wrapper">
         <h1>Jūsų krepšelis</h1>
 
-       
-        <div id="cart-items" class="menu-grid"></div>
+
+        <!-- Ingredientų pasirinkimo modalo langas -->
+        <div id="ingredient-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h3>Pasirinkite kurių ingredientų atsisakyti</h3>
+                <form id="ingredient-form">
+                    <div id="ingredient-options"></div>
+                    <input type="hidden" id="ingredient-index">
+                    <div class="modal-actions" style="margin-top: 10px;">
+                        <button type="submit">Išsaugoti</button>
+                        <button type="button" id="ingredient-cancel">Atšaukti</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 
         <h2>🧠 Rekomenduojame paragauti:</h2>
