@@ -3,7 +3,7 @@
 
     const cartItemsContainer = document.getElementById("cart-items");
     const hiddenInput = document.getElementById("order-data");
-    const orderForm = document.querySelector('form[action="/checkout"]'); // Užsakymo forma
+    const orderForm = document.querySelector('form[action="/checkout"]');
     const modal = document.getElementById("customize-modal");
     const optionsContainer = document.getElementById("ingredient-checkboxes");
     const cancelBtn = document.getElementById("cancel-customize");
@@ -41,34 +41,6 @@
         "Latte kava": ["Espresso", "Pienas"],
         "Coca-Cola": ["Cukrus", "Kofeinas", "Burbuliukai"],
         "Žalioji arbata": ["Žalioji arbata"]
-    };
-
-    const ingredientCases = {
-        "Pomidorai": "pomidorų",
-        "Mocarela": "mocarelos",
-        "Bazilikas": "baziliko",
-        "Jautiena": "jautienos",
-        "Sūris": "sūrio",
-        "Padažas": "padažo",
-        "Salotos": "salotų",
-        "Vištiena": "vištienos",
-        "Morkos": "morkų",
-        "Selerijos": "selerijų",
-        "Makaronai": "makaronų",
-        "Parmezanas": "parmezano",
-        "Krutonai": "krutonų",
-        "Bulvės": "bulvių",
-        "Miltai": "miltų",
-        "Šokoladas": "šokolado",
-        "Saldainiukai": "saldainiukų",
-        "Medus": "medaus",
-        "Mėlynės": "mėlynių",
-        "Espresso": "espreso",
-        "Pienas": "pieno",
-        "Cukrus": "cukraus",
-        "Kofeinas": "kofeino",
-        "Burbuliukai": "burbuliukų",
-        "Žalioji arbata": "žaliosios arbatos"
     };
 
     function renderCart() {
@@ -141,8 +113,7 @@
                 checkbox.value = ingr;
                 checkbox.id = ingr;
                 checkbox.name = "ingredient";
-                const removedForm = ingredientCases[ingr] || ingr.toLowerCase();
-                checkbox.checked = !(item.customizations || []).includes(removedForm);
+                checkbox.checked = !(item.customizations || []).includes(ingr);
 
                 const label = document.createElement("label");
                 label.htmlFor = ingr;
@@ -169,12 +140,10 @@
         window.location.href = "/checkout_success.html";
     });
 
-
     customizeForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const checked = document.querySelectorAll('#ingredient-checkboxes input:not(:checked)');
         const removed = Array.from(checked).map(cb => cb.value);
-        });
         cart[currentEditIndex].customizations = removed.length > 0 ? removed : null;
         localStorage.setItem("cart", JSON.stringify(cart));
         modal.style.display = "none";
@@ -187,7 +156,7 @@
 
     renderCart();
     generateRecommendations();
-;
+});
 
 function generateRecommendations() {
     const allDishes = [
@@ -210,7 +179,7 @@ function generateRecommendations() {
     const recWrapper = document.getElementById("recommendations");
     if (!recWrapper) return;
 
-    recWrapper.innerHTML = ""; // Išvalom senas rekomendacijas
+    recWrapper.innerHTML = "";
 
     const suggestions = allDishes.filter(d => !cartNames.includes(d.name)).slice(0, 3);
 
