@@ -68,27 +68,39 @@ document.addEventListener("DOMContentLoaded", function () {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
-    const simulateAdd = (itemName, quantity = 1) => {
-        const buttons = document.querySelectorAll(".add-to-cart");
-        let found = false;
-        for (let i = 0; i < quantity; i++) {
-            buttons.forEach(btn => {
-                if (btn.dataset.name.toLowerCase() === itemName.toLowerCase()) {
-                    btn.click();
-                    found = true;
-                }
+    const simulateAdd = (itemName, quantity = 1, customizations = null) => {
+        let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const existing = cartItems.find(item =>
+            item.name.toLowerCase() === itemName.toLowerCase() &&
+            JSON.stringify(item.customizations || []) === JSON.stringify(customizations || [])
+        );
+
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            const price = parseFloat(
+                [...document.querySelectorAll(".add-to-cart")]
+                    .find(btn => btn.dataset.name.toLowerCase() === itemName.toLowerCase())?.dataset.price
+            );
+
+            if (isNaN(price)) return false;
+
+            cartItems.push({
+                name: itemName,
+                quantity,
+                price,
+                customizations
             });
         }
 
-        if (found) {
-            const updated = JSON.parse(localStorage.getItem("cart")) || [];
-            cart.length = 0;
-            cart.push(...updated);
-            updateCartCount();
-        }
-
-        return found;
+        localStorage.setItem("cart", JSON.stringify(cartItems));
+        cart.length = 0;
+        cart.push(...cartItems);
+        updateCartCount();
+        return true;
     };
+
 
     const removeFromCart = (itemName) => {
         const index = cart.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
@@ -164,10 +176,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     if (act.action === "add_to_cart") {
-                        const success = simulateAdd(act.item, qty);
-                        if (success) addMessage("Sistema", `✅ ĮDĖTA ${qty} x ${act.item}`, false);
-                        else addMessage("Sistema", `❌ Nepavyko pridėti: ${act.item}`, false);
+                        const success = simulateAdd(act.item, qty, act.customizations || null);
+                        if (success) {
+                            const ing = act.customizations?.length ? ` (be: ${act.customizations.join(", ")})` : "";
+                            addMessage("Sistema", `✅ ĮDĖTA ${qty} x ${act.item}${ing}`, false);
+                        } else {
+                            addMessage("Sistema", `❌ Nepavyko pridėti: ${act.item}`, false);
+                        }
                     }
+
 
                     else if (act.action === "remove_from_cart") {
                         const success = removeFromCart(act.item);
