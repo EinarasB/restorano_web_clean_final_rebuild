@@ -63,6 +63,24 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         menu_items = db.query(MenuItem).all()
         menu_description = "\n".join([f"- {item.name}: €{item.price:.2f}" for item in menu_items])
 
+        ingredient_map = {
+    "Margarita": ["Pomidorų padažas", "Mocarela sūris", "Bazilikas"],
+    "Burgeris": ["Jautiena", "Sūris", "Padažas", "Salotos"],
+    "Vištienos sriuba": ["Vištiena", "Morkos", "Selerijos"],
+    "Makaronai su vištiena": ["Makaronai", "Vištiena", "Sūris", "Padažas"],
+    "Cezario salotos": ["Vištiena", "Salotos", "Parmezanas", "Krutonai"],
+    "Jautienos kepsnys": ["Jautiena", "Bulvės", "Padažas"],
+    "Spurga su šokoladu": ["Šokoladas", "Saldainiukai"],
+    "Blyneliai": ["Medus", "Mėlynės"],
+    "Latte kava": ["Pienas"],
+    "Coca-Cola": ["Cukrus"],
+    "Žalioji arbata": ["Žaliosios arbatos lapeliai"]
+}
+
+ingredient_description = "\n".join([
+    f"- {name}: {', '.join(ings)}" for name, ings in ingredient_map.items()
+])
+
         system_prompt = {
     "role": "system",
     "content": (
@@ -99,6 +117,13 @@ async def chat_endpoint(req: ChatRequest, request: Request):
         "Tada paklausk tekstu: „Ar pridėti šį variantą į krepšelį?“\n"
         "Jei klientas atsako taip – siųsk:\n"
         "{ \"action\": \"add_to_cart\", \"item\": \"Burgeris\", \"quantity\": 1, \"customizations\": [\"Sūris\", \"Padažas\"] }"
+
+        "Galimi ingredientai kiekvienam patiekalui:\n"
+f"{ingredient_description}\n\n"
+
+"Jei vartotojas klausia: „Kokie ingredientai yra burgeryje?“ arba „Ką galiu pašalinti iš Margaritos?“ – atsakyk tekstu.\n"
+"Pvz.: 'Margarita sudaryta iš: Pomidorai, Mocarela, Bazilikas. Galite pašalinti bet kurį iš jų.'\n"
+
     )
 }
 
