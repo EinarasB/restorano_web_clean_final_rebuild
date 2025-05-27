@@ -11,19 +11,9 @@
     const cancelBtn = document.getElementById("cancel-customize");
     const customizeForm = document.getElementById("customize-form");
 
-    // Create and insert decision modal
-    const decisionModal = document.createElement("div");
-    decisionModal.id = "customize-decision";
-    decisionModal.className = "modal";
-    decisionModal.style.display = "none";
-    decisionModal.innerHTML = `
-        <div class="modal-content">
-            <p>Ar norite redaguoti visus vienetus, ar tik vieną (atskiras variantas)?</p>
-            <button id="edit-all">Redaguoti visus</button>
-            <button id="split-item">Tik vieną (naujas įrašas)</button>
-        </div>
-    `;
-    document.body.appendChild(decisionModal);
+    const decisionModal = document.getElementById("customize-decision");
+    const editAllBtn = document.getElementById("edit-all");
+    const splitItemBtn = document.getElementById("split-item");
 
     const imageMap = {
         "Margarita": "pica.jpg",
@@ -118,12 +108,14 @@
 
             if (item.quantity > 1) {
                 decisionModal.style.display = "flex";
-                document.getElementById("edit-all").onclick = () => {
+
+                editAllBtn.onclick = () => {
                     isSplitCustomization = false;
                     decisionModal.style.display = "none";
                     openCustomizeModal(item);
                 };
-                document.getElementById("split-item").onclick = () => {
+
+                splitItemBtn.onclick = () => {
                     isSplitCustomization = true;
                     decisionModal.style.display = "none";
                     openCustomizeModal(item);
@@ -191,6 +183,62 @@
         });
 
         modal.style.display = "flex";
+    }
+
+    function generateRecommendations() {
+        const allDishes = [
+            { name: "Kava", price: 2.49, image: "kava.jpg" },
+            { name: "Spurga su šokoladu", price: 5.49, image: "desertas.jpg" },
+            { name: "Cezario salotos", price: 6.49, image: "salotos.jpg" },
+            { name: "Makaronai su vištiena", price: 9.49, image: "pasta.jpg" },
+            { name: "Blyneliai", price: 4.99, image: "pankekai.jpg" },
+            { name: "Jautienos kepsnys", price: 13.99, image: "kepsnys.jpg" },
+            { name: "Latte kava", price: 2.49, image: "kava.jpg" },
+            { name: "Vištienos sriuba", price: 4.99, image: "sriuba.jpg" },
+            { name: "Margarita", price: 7.99, image: "pica.jpg" },
+            { name: "Burgeris", price: 8.49, image: "burger.jpg" },
+            { name: "Coca-Cola", price: 1.99, image: "cola.jpg" },
+            { name: "Žalioji arbata", price: 1.49, image: "arbata.jpg" }
+        ];
+
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartNames = cartItems.map(item => item.name);
+        const recWrapper = document.getElementById("recommendations");
+        if (!recWrapper) return;
+
+        recWrapper.innerHTML = "";
+
+        const suggestions = allDishes.filter(d => !cartNames.includes(d.name)).slice(0, 3);
+
+        suggestions.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "menu-card";
+            card.innerHTML = `
+                <img src="/static/images/${item.image}" alt="${item.name}">
+                <div class="menu-info">
+                    <h3>${item.name}</h3>
+                    <span class="price">€${item.price.toFixed(2)}</span>
+                    <button class="add-to-cart" data-name="${item.name}" data-price="${item.price}">Į krepšelį</button>
+                </div>
+            `;
+            recWrapper.appendChild(card);
+        });
+
+        recWrapper.addEventListener("click", function (e) {
+            if (e.target.classList.contains("add-to-cart")) {
+                const name = e.target.dataset.name;
+                const price = parseFloat(e.target.dataset.price);
+                const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+                const existing = cartItems.find(i => i.name === name);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    cartItems.push({ name, price, quantity: 1 });
+                }
+                localStorage.setItem("cart", JSON.stringify(cartItems));
+                location.reload();
+            }
+        });
     }
 
     renderCart();
