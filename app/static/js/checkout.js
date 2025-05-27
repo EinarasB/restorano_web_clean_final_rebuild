@@ -166,15 +166,14 @@
         localStorage.removeItem("cart");
         cart = [];
         renderCart();
-        alert("Užsakymas pateiktas!");
+        window.location.href = "/checkout_success.html";
     });
+
 
     customizeForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const checked = document.querySelectorAll('#ingredient-checkboxes input:not(:checked)');
-        const removed = Array.from(checked).map(cb => {
-            const ingr = cb.value;
-            return ingredientCases[ingr] || ingr.toLowerCase();
+        const removed = Array.from(checked).map(cb => cb.value);
         });
         cart[currentEditIndex].customizations = removed.length > 0 ? removed : null;
         localStorage.setItem("cart", JSON.stringify(cart));
