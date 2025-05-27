@@ -77,8 +77,8 @@ async def chat_endpoint(req: ChatRequest, request: Request):
     "Žalioji arbata": ["Žaliosios arbatos lapeliai"]
 }
 
-ingredient_description = "\n".join([
-    f"- {name}: {', '.join(ings)}" for name, ings in ingredient_map.items()
+        ingredient_description = "\n".join([
+        f"- {name}: {', '.join(ings)}" for name, ings in ingredient_map.items()
 ])
 
         system_prompt = {
@@ -119,10 +119,10 @@ ingredient_description = "\n".join([
         "{ \"action\": \"add_to_cart\", \"item\": \"Burgeris\", \"quantity\": 1, \"customizations\": [\"Sūris\", \"Padažas\"] }"
 
         "Galimi ingredientai kiekvienam patiekalui:\n"
-f"{ingredient_description}\n\n"
+        f"{ingredient_description}\n\n"
 
-"Jei vartotojas klausia: „Kokie ingredientai yra burgeryje?“ arba „Ką galiu pašalinti iš Margaritos?“ – atsakyk tekstu.\n"
-"Pvz.: 'Margarita sudaryta iš: Pomidorai, Mocarela, Bazilikas. Galite pašalinti bet kurį iš jų.'\n"
+        "Jei vartotojas klausia: „Kokie ingredientai yra burgeryje?“ arba „Ką galiu pašalinti iš Margaritos?“ – atsakyk tekstu.\n"
+        "Pvz.: 'Margarita sudaryta iš: Pomidorai, Mocarela, Bazilikas. Galite pašalinti bet kurį iš jų.'\n"
 
     )
 }
