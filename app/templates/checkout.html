@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Užsakymo krepšelis</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="/static/js/checkout.js" defer></script>
@@ -12,28 +11,30 @@
     <div class="menu-wrapper">
         <h1>Jūsų krepšelis</h1>
 
+        <!-- Krepšelio turinys -->
+        <h2>Jūsų pasirinkimai</h2>
+        <div id="cart-items"></div>
 
         <!-- Ingredientų pasirinkimo modalo langas -->
-        <div id="ingredient-modal" class="modal" style="display:none;">
+        <div id="customize-modal" class="modal" style="display:none;">
             <div class="modal-content">
                 <h3>Pasirinkite kurių ingredientų atsisakyti</h3>
-                <form id="ingredient-form">
-                    <div id="ingredient-options"></div>
+                <form id="customize-form">
+                    <div id="ingredient-checkboxes"></div>
                     <input type="hidden" id="ingredient-index">
                     <div class="modal-actions" style="margin-top: 10px;">
                         <button type="submit">Išsaugoti</button>
-                        <button type="button" id="ingredient-cancel">Atšaukti</button>
+                        <button type="button" id="cancel-customize">Atšaukti</button>
                     </div>
                 </form>
             </div>
         </div>
 
-
+        <!-- Rekomendacijos -->
         <h2>🧠 Rekomenduojame paragauti:</h2>
         <div id="recommendations" class="menu-grid"></div>
 
-
-
+        <!-- Apmokėjimo forma -->
         <div class="checkout-section">
             <h3>Apmokėjimo būdas</h3>
             <form method="post" action="/checkout">

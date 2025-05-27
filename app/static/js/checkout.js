@@ -1,5 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
     const cartItemsContainer = document.getElementById("cart-items");
     const hiddenInput = document.getElementById("order-data");
     const form = document.querySelector("form");
@@ -8,6 +9,11 @@
     const cancelBtn = document.getElementById("cancel-customize");
     const customizeForm = document.getElementById("customize-form");
     let currentEditIndex = null;
+
+    if (!cartItemsContainer || !form || !modal || !optionsContainer || !cancelBtn || !customizeForm) {
+        console.error("Vienas ar daugiau DOM elementų nerasti. Patikrink HTML struktūrą.");
+        return;
+    }
 
     const imageMap = {
         "Margarita": "pica.jpg",
@@ -37,7 +43,7 @@
         "Žalioji arbata": ["Žalioji arbata"]
     };
 
-    const renderCart = () => {
+    function renderCart() {
         cartItemsContainer.innerHTML = "";
         let total = 0;
 
@@ -81,7 +87,7 @@
         cartItemsContainer.appendChild(totalElement);
 
         hiddenInput.value = JSON.stringify(cart);
-    };
+    }
 
     cartItemsContainer.addEventListener("click", (e) => {
         const index = parseInt(e.target.dataset.index);
@@ -160,7 +166,7 @@ function generateRecommendations() {
         { name: "Vištienos sriuba", price: 4.99, image: "sriuba.jpg" },
         { name: "Margarita", price: 7.99, image: "pica.jpg" },
         { name: "Burgeris", price: 8.49, image: "burger.jpg" },
-        { name: "Cola-Cola", price: 1.99, image: "cola.jpg" },
+        { name: "Coca-Cola", price: 1.99, image: "cola.jpg" },
         { name: "Žalioji arbata", price: 1.49, image: "arbata.jpg" }
     ];
 
