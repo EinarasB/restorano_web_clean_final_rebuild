@@ -3,14 +3,14 @@
 
     const cartItemsContainer = document.getElementById("cart-items");
     const hiddenInput = document.getElementById("order-data");
-    const form = document.querySelector("form");
+    const orderForm = document.querySelector('form[action="/checkout"]'); // Užsakymo forma
     const modal = document.getElementById("customize-modal");
     const optionsContainer = document.getElementById("ingredient-checkboxes");
     const cancelBtn = document.getElementById("cancel-customize");
     const customizeForm = document.getElementById("customize-form");
     let currentEditIndex = null;
 
-    if (!cartItemsContainer || !form || !modal || !optionsContainer || !cancelBtn || !customizeForm) {
+    if (!cartItemsContainer || !orderForm || !modal || !optionsContainer || !cancelBtn || !customizeForm) {
         console.error("Vienas ar daugiau DOM elementų nerasti. Patikrink HTML struktūrą.");
         return;
     }
@@ -161,7 +161,7 @@
         renderCart();
     });
 
-    form.addEventListener("submit", (e) => {
+    orderForm.addEventListener("submit", (e) => {
         e.preventDefault();
         localStorage.removeItem("cart");
         cart = [];
@@ -233,6 +233,7 @@ function generateRecommendations() {
         if (e.target.classList.contains("add-to-cart")) {
             const name = e.target.dataset.name;
             const price = parseFloat(e.target.dataset.price);
+            const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
             const existing = cartItems.find(i => i.name === name);
             if (existing) {
                 existing.quantity += 1;
