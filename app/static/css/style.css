@@ -781,3 +781,19 @@ button.reserved {
     border-radius: 8px;
     min-width: 300px;
 }
+
+.reservation-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+    .reservation-box .btn {
+        width: 100%;
+        max-width: 250px;
+        text-align: center;
+        padding: 12px 20px;
+        font-size: 16px;
+        margin: 4px 0;
+    }
