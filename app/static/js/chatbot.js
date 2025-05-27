@@ -135,6 +135,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 for (const act of actions) {
                     const qty = act.quantity || 1;
 
+                    if (act.action === "customize_item") {
+                        const customItem = {
+                            name: act.item,
+                            price: 0,
+                            quantity: 1,
+                            customizations: act.remove || []
+                        };
+
+                        const buttons = document.querySelectorAll(".add-to-cart");
+                        buttons.forEach(btn => {
+                            if (btn.dataset.name.toLowerCase() === customItem.name.toLowerCase()) {
+                                customItem.price = parseFloat(btn.dataset.price);
+                            }
+                        });
+
+                        if (customItem.price === 0) {
+                            addMessage("Sistema", `⚠️ Nepavyko nustatyti ${customItem.name} kainos.`, false);
+                            return;
+                        }
+
+                        addMessage("Sistema", `🧑‍🍳 Pašalinti ingredientai: ${customItem.customizations.join(", ")}.<br>Ar pridėti šį patiekalą į krepšelį? (Atsakykite „taip“)`, false);
+                        pendingAction = {
+                            type: "add_custom_item",
+                            item: customItem
+                        };
+                        return;
+                    }
+
                     if (act.action === "add_to_cart") {
                         const success = simulateAdd(act.item, qty);
                         if (success) addMessage("Sistema", `✅ ĮDĖTA ${qty} x ${act.item}`, false);
