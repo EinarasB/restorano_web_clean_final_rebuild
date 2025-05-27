@@ -16,19 +16,32 @@
         <div id="cart-items"></div>
 
         <!-- Ingredientų pasirinkimo modalo langas -->
-        <div id="customize-modal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <h3>Pasirinkite kurių ingredientų atsisakyti</h3>
-                <form id="customize-form">
-                    <div id="ingredient-checkboxes"></div>
-                    <input type="hidden" id="ingredient-index">
-                    <div class="modal-actions" style="margin-top: 10px;">
-                        <button type="submit">Išsaugoti</button>
-                        <button type="button" id="cancel-customize">Atšaukti</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <!-- Ingredientų pasirinkimo modalo langas -->
+<!-- Ingredientų pasirinkimo modalo langas -->
+<div id="customize-modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Pasirinkite kurių ingredientų atsisakyti</h3>
+    <form id="customize-form">
+      <div id="ingredient-checkboxes"></div>
+      <input type="hidden" id="ingredient-index">
+      <div class="modal-actions" style="margin-top: 10px;">
+        <button type="submit">Išsaugoti</button>
+        <button type="button" id="cancel-customize">Atšaukti</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modalas: pasirinkti ar redaguoti visus, ar tik vieną -->
+<div id="customize-decision" class="modal" style="display: none;">
+  <div class="modal-content">
+    <p>Ar norite redaguoti visus vienetus, ar tik vieną (atskiras variantas)?</p>
+    <div class="modal-actions">
+      <button id="edit-all">Redaguoti visus</button>
+      <button id="split-item">Tik vieną (naujas įrašas)</button>
+    </div>
+  </div>
+</div>
 
         <!-- Rekomendacijos -->
         <h2>🧠 Rekomenduojame paragauti:</h2>
